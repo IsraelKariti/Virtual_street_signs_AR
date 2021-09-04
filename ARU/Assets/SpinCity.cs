@@ -85,6 +85,8 @@ public class SpinCity : MonoBehaviour
             File.Delete(Application.persistentDataPath + "/AndroidcamlonAVG.txt");
             File.Delete(Application.persistentDataPath + "/AndroidoriginlatAVG.txt");
             File.Delete(Application.persistentDataPath + "/AndroidoriginlonAVG.txt");
+            File.Delete(Application.persistentDataPath + "/Androidoriginlat.txt");
+            File.Delete(Application.persistentDataPath + "/Androidoriginlon.txt");
             
         }
         else// AR is tracking:
@@ -138,6 +140,8 @@ public class SpinCity : MonoBehaviour
 
             // calculate origin of coordinate system
             Tuple<double, double> tup = GetOriginLatLon(lat, lon);
+            File.AppendAllText(Application.persistentDataPath + "/Androidoriginlat.txt", "lat: " + tup.Item1 + "\n");
+            File.AppendAllText(Application.persistentDataPath + "/Androidoriginlon.txt", "lon: " + tup.Item2 + "\n");
 
             // add the calculated lat-lon of the origin to the vector
             qAndroidGPSOrigin.Enqueue(tup);
@@ -145,7 +149,7 @@ public class SpinCity : MonoBehaviour
             // get the average origin lat-lon in real world coordinates
             Tuple<double, double> avgGPSOrigin = getGPSAvg(qAndroidGPSOrigin);
             File.AppendAllText(Application.persistentDataPath + "/AndroidoriginlatAVG.txt", "lat: " + avgGPSOrigin.Item1 + "\n");
-            File.AppendAllText(Application.persistentDataPath + "/AndroidoriginlonAVG.txt", "lat: " + avgGPSOrigin.Item2 + "\n");
+            File.AppendAllText(Application.persistentDataPath + "/AndroidoriginlonAVG.txt", "lon: " + avgGPSOrigin.Item2 + "\n");
 
             //Debug.Log("talikar avg...");
             //AndroidText.text = "Android count: " + androidCounter +
