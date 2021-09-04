@@ -83,6 +83,9 @@ public class SpinCity : MonoBehaviour
             File.Delete(Application.persistentDataPath + "/Androidcamlon.txt");
             File.Delete(Application.persistentDataPath + "/AndroidcamlatAVG.txt");
             File.Delete(Application.persistentDataPath + "/AndroidcamlonAVG.txt");
+            File.Delete(Application.persistentDataPath + "/AndroidoriginlatAVG.txt");
+            File.Delete(Application.persistentDataPath + "/AndroidoriginlonAVG.txt");
+            
         }
         else// AR is tracking:
         {
@@ -115,6 +118,7 @@ public class SpinCity : MonoBehaviour
             Debug.Log("talikar time is bigger");
 
             androidCounter++;
+            AndroidText.text = "counter: " + androidCounter;
             lastAndroidGPSTimeStamp = time;
             // calculate new lat-lon for the origin 
             double lat = gpsProvider.Get<double>("lat");
@@ -133,18 +137,21 @@ public class SpinCity : MonoBehaviour
             File.AppendAllText(Application.persistentDataPath + "/AndroidcamlonAVG.txt", "lon: " + avgGPSCam.Item2 + "\n");
 
             // calculate origin of coordinate system
-            //Tuple<double, double> tup = GetOriginLatLon(lat, lon);
+            Tuple<double, double> tup = GetOriginLatLon(lat, lon);
 
             // add the calculated lat-lon of the origin to the vector
-            //qAndroidGPSOrigin.Enqueue(tup);
+            qAndroidGPSOrigin.Enqueue(tup);
 
             // get the average origin lat-lon in real world coordinates
-            //Tuple<double, double> avgGPSOrigin = getGPSAvg(qAndroidGPSOrigin);
-            Debug.Log("talikar avg...");
-            AndroidText.text = "Android count: " + androidCounter +
-                "\ncounter: " + androidCounter;// +
-                //"\norigin-lat: \n" + avgGPSOrigin.Item1 +
-                //"\norigin-lon: \n" + avgGPSOrigin.Item2;
+            Tuple<double, double> avgGPSOrigin = getGPSAvg(qAndroidGPSOrigin);
+            File.AppendAllText(Application.persistentDataPath + "/AndroidoriginlatAVG.txt", "lat: " + avgGPSOrigin.Item1 + "\n");
+            File.AppendAllText(Application.persistentDataPath + "/AndroidoriginlonAVG.txt", "lat: " + avgGPSOrigin.Item2 + "\n");
+
+            //Debug.Log("talikar avg...");
+            //AndroidText.text = "Android count: " + androidCounter +
+            //"\ncounter: " + androidCounter;// +
+            //"\norigin-lat: \n" + avgGPSOrigin.Item1 +
+            //"\norigin-lon: \n" + avgGPSOrigin.Item2;
 
         }
     }
