@@ -83,6 +83,8 @@ public class SpinCity : MonoBehaviour
             File.Delete(Application.persistentDataPath + "/Androidcamlat.txt");
             File.Delete(Application.persistentDataPath + "/Androidcam_x.txt");
             File.Delete(Application.persistentDataPath + "/Androidcam_z.txt");
+            File.Delete(Application.persistentDataPath + "/Androidcam_ARheading.txt");
+            File.Delete(Application.persistentDataPath + "/Androidcam_heading.txt");
             
             File.Delete(Application.persistentDataPath + "/Androidcamlon.txt");
             File.Delete(Application.persistentDataPath + "/Androidcamdist.txt");
@@ -179,8 +181,26 @@ public class SpinCity : MonoBehaviour
 
         // calculate the heading between the current camera position and the origin in world coordinate system
         double headingFromCamToOrigin = getHeadingToOriginInRealWorldCoordinateSystem();
+        File.AppendAllText(Application.persistentDataPath + "/Androidcam_heading.txt", "heading: " + headingFromCamToOrigin + "\n");
+
         // calculate new lat-lon for the origin 
         return CalculateOriginLatLon(phoneLat, phoneLon, headingFromCamToOrigin, camDistFromOrigin);
+    }
+
+    // get the heading between true north and origin(0,0) when the GPS coordinate is the axis
+    double getHeadingToOriginInRealWorldCoordinateSystem()
+    {
+        // get the angle on the y axis (when z axis is 0 degrees) to the origin
+        double AngleToOriginInARcoordinateSystem = getAngleToOriginInARcoordinateSystem();
+        File.AppendAllText(Application.persistentDataPath + "/Androidcam_ARheading.txt", "heading: " + AngleToOriginInARcoordinateSystem + "\n");
+
+        // the CW angle the coordinate system needs to rotate to be aligned with true North 
+        double diff1 = 360.0 - avgCompass;
+        // get the CW angle in the true north coordinate system between GPS and origin
+        double diff2 = AngleToOriginInARcoordinateSystem - diff1;
+        // normalize to positive
+        double diff3 = (360 + diff2) % 360.0;
+        return diff3;
     }
 
     // collect additional GPS sensor reading for calculation
@@ -219,19 +239,7 @@ public class SpinCity : MonoBehaviour
 
     
 
-    // get the heading between true north and origin(0,0) when the GPS coordinate is the axis
-    double getHeadingToOriginInRealWorldCoordinateSystem()
-    {
-        // get the angle on the y axis (when z axis is 0 degrees) to the origin
-        double AngleToOriginInARcoordinateSystem = getAngleToOriginInARcoordinateSystem();
-        // the CW angle the coordinate system needs to rotate to be aligned with true North 
-        double diff1 = 360.0 - avgCompass;
-        // get the CW angle in the true north coordinate system between GPS and origin
-        double diff2 = AngleToOriginInARcoordinateSystem - diff1;
-        // normalize to positive
-        double diff3 = (360 + diff2) % 360.0;
-        return diff3;
-    }
+    
 
     // this angle is based on position of the camera with respect to origin of the AR coordinate system
     // (NOTICE: it has nothing to do with rotation of the camera!)
