@@ -81,6 +81,9 @@ public class SpinCity : MonoBehaviour
             File.Delete(Application.persistentDataPath + "/camlon.txt");
 
             File.Delete(Application.persistentDataPath + "/Androidcamlat.txt");
+            File.Delete(Application.persistentDataPath + "/Androidcam_x.txt");
+            File.Delete(Application.persistentDataPath + "/Androidcam_z.txt");
+            
             File.Delete(Application.persistentDataPath + "/Androidcamlon.txt");
             File.Delete(Application.persistentDataPath + "/Androidcamdist.txt");
 
@@ -165,6 +168,10 @@ public class SpinCity : MonoBehaviour
     // get the latitude and longitude for the origin
     Tuple<double, double> GetOriginLatLon(double phoneLat, double phoneLon)
     {
+        File.AppendAllText(Application.persistentDataPath + "/Androidcam_x.txt", "dist: " + cam.transform.position.x + "\n");
+        File.AppendAllText(Application.persistentDataPath + "/Androidcam_z.txt", "dist: " + cam.transform.position.z + "\n");
+
+
         // calculate the distance between the camera and the origin
         double camDistFromOrigin = Math.Sqrt(Math.Pow(cam.transform.position.x, 2) + Math.Pow(cam.transform.position.z, 2));
 
