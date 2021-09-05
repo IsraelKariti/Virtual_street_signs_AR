@@ -1573,7 +1573,7 @@ MonoBehaviour:
   loadingText: {fileID: 463930439}
   GPSText: {fileID: 186448949}
   stat: {fileID: 1894159242}
-  AndroidText: {fileID: 0}
+  AndroidText: {fileID: 1843204508}
   cam: {fileID: 22732920}
 --- !u!4 &1577749886 stripped
 Transform:
