@@ -79,8 +79,11 @@ public class SpinCity : MonoBehaviour
             androidCounter = 0;
             File.Delete(Application.persistentDataPath + "/camlat.txt");
             File.Delete(Application.persistentDataPath + "/camlon.txt");
+
             File.Delete(Application.persistentDataPath + "/Androidcamlat.txt");
             File.Delete(Application.persistentDataPath + "/Androidcamlon.txt");
+            File.Delete(Application.persistentDataPath + "/Androidcamdist.txt");
+
             File.Delete(Application.persistentDataPath + "/AndroidcamlatAVG.txt");
             File.Delete(Application.persistentDataPath + "/AndroidcamlonAVG.txt");
             File.Delete(Application.persistentDataPath + "/AndroidoriginlatAVG.txt");
@@ -131,25 +134,25 @@ public class SpinCity : MonoBehaviour
             File.AppendAllText(Application.persistentDataPath + "/Androidcamlon.txt", "lon: " + lon + "\n");
 
             // camera gps (USE ONLY WHEN CAMERA IS STATIC)
-            qAndroidGPSCam.Enqueue(new Tuple<double, double>(lat, lon));
-            Tuple<double, double> avgGPSCam = getGPSAvg(qAndroidGPSCam);
+            //qAndroidGPSCam.Enqueue(new Tuple<double, double>(lat, lon));
+            //Tuple<double, double> avgGPSCam = getGPSAvg(qAndroidGPSCam);
 
             //Log the gps coordinates
-            File.AppendAllText(Application.persistentDataPath + "/AndroidcamlatAVG.txt", "lat: " + avgGPSCam.Item1 + "\n");
-            File.AppendAllText(Application.persistentDataPath + "/AndroidcamlonAVG.txt", "lon: " + avgGPSCam.Item2 + "\n");
+            //File.AppendAllText(Application.persistentDataPath + "/AndroidcamlatAVG.txt", "lat: " + avgGPSCam.Item1 + "\n");
+            //File.AppendAllText(Application.persistentDataPath + "/AndroidcamlonAVG.txt", "lon: " + avgGPSCam.Item2 + "\n");
 
             // calculate origin of coordinate system
             Tuple<double, double> tup = GetOriginLatLon(lat, lon);
-            File.AppendAllText(Application.persistentDataPath + "/Androidoriginlat.txt", "lat: " + tup.Item1 + "\n");
-            File.AppendAllText(Application.persistentDataPath + "/Androidoriginlon.txt", "lon: " + tup.Item2 + "\n");
+            //File.AppendAllText(Application.persistentDataPath + "/Androidoriginlat.txt", "lat: " + tup.Item1 + "\n");
+            //File.AppendAllText(Application.persistentDataPath + "/Androidoriginlon.txt", "lon: " + tup.Item2 + "\n");
 
             // add the calculated lat-lon of the origin to the vector
-            qAndroidGPSOrigin.Enqueue(tup);
+            //qAndroidGPSOrigin.Enqueue(tup);
 
             // get the average origin lat-lon in real world coordinates
-            Tuple<double, double> avgGPSOrigin = getGPSAvg(qAndroidGPSOrigin);
-            File.AppendAllText(Application.persistentDataPath + "/AndroidoriginlatAVG.txt", "lat: " + avgGPSOrigin.Item1 + "\n");
-            File.AppendAllText(Application.persistentDataPath + "/AndroidoriginlonAVG.txt", "lon: " + avgGPSOrigin.Item2 + "\n");
+            //Tuple<double, double> avgGPSOrigin = getGPSAvg(qAndroidGPSOrigin);
+            //File.AppendAllText(Application.persistentDataPath + "/AndroidoriginlatAVG.txt", "lat: " + avgGPSOrigin.Item1 + "\n");
+            //File.AppendAllText(Application.persistentDataPath + "/AndroidoriginlonAVG.txt", "lon: " + avgGPSOrigin.Item2 + "\n");
 
             //Debug.Log("talikar avg...");
             //AndroidText.text = "Android count: " + androidCounter +
@@ -158,6 +161,19 @@ public class SpinCity : MonoBehaviour
             //"\norigin-lon: \n" + avgGPSOrigin.Item2;
 
         }
+    }
+    // get the latitude and longitude for the origin
+    Tuple<double, double> GetOriginLatLon(double phoneLat, double phoneLon)
+    {
+        // calculate the distance between the camera and the origin
+        double camDistFromOrigin = Math.Sqrt(Math.Pow(cam.transform.position.x, 2) + Math.Pow(cam.transform.position.z, 2));
+
+        File.AppendAllText(Application.persistentDataPath + "/Androidcamdist.txt", "dist: " + camDistFromOrigin + "\n");
+
+        // calculate the heading between the current camera position and the origin in world coordinate system
+        double headingFromCamToOrigin = getHeadingToOriginInRealWorldCoordinateSystem();
+        // calculate new lat-lon for the origin 
+        return CalculateOriginLatLon(phoneLat, phoneLon, headingFromCamToOrigin, camDistFromOrigin);
     }
 
     // collect additional GPS sensor reading for calculation
@@ -177,10 +193,7 @@ public class SpinCity : MonoBehaviour
                 qUnityGPSOrigin.Enqueue(tup);
                 // get the average origin lat-lon in real world coordinates
                 Tuple<double, double> avgGPS = getGPSAvg(qUnityGPSOrigin);
-                //Log the gps coordinates
-                File.AppendAllText(Application.persistentDataPath + "/camlat.txt", "lat: "+ Input.location.lastData.latitude + "\n");
-                File.AppendAllText(Application.persistentDataPath + "/camlon.txt", "lon: "+ Input.location.lastData.longitude + "\n");
-
+                
                 GPSText.text = "U LAT:" + Input.location.lastData.latitude +
                     "\nU LON:" + Input.location.lastData.longitude +
                     "\nA LAT:" + gpsProvider.Get<double>("lat") +
@@ -197,16 +210,7 @@ public class SpinCity : MonoBehaviour
         }
     }
 
-    // get the latitude and longitude for the origin
-    Tuple<double, double> GetOriginLatLon(double phoneLat, double phoneLon)
-    {
-        // calculate the distance between the camera and the origin
-        double camDistFromOrigin = Math.Sqrt(Math.Pow(cam.transform.position.x, 2) + Math.Pow(cam.transform.position.z, 2));
-        // calculate the heading between the current camera position and the origin in world coordinate system
-        double headingFromCamToOrigin = getHeadingToOriginInRealWorldCoordinateSystem();
-        // calculate new lat-lon for the origin 
-        return CalculateOriginLatLon(phoneLat,phoneLon, headingFromCamToOrigin, camDistFromOrigin);
-    }
+    
 
     // get the heading between true north and origin(0,0) when the GPS coordinate is the axis
     double getHeadingToOriginInRealWorldCoordinateSystem()
