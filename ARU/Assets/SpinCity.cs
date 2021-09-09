@@ -106,9 +106,7 @@ public class SpinCity : MonoBehaviour
 
             // add a new compass read if exist
             AddCompassRead();
-            // get respective average of all compass readings
-            avgCompass = getCompassAvg(qCompass);
-            compassText.text += "\navg: " + avgCompass;
+            
             // rotate the virtual city to align with the readings
             transform.eulerAngles = new Vector3(transform.eulerAngles.x, -avgCompass, transform.eulerAngles.z);
             //compassText.text = "" + (float)qCompass.Count / 10.0f + "%";
@@ -286,12 +284,17 @@ public class SpinCity : MonoBehaviour
             // update the last time a compass was read
             lastCompassTimeStamp = Input.compass.timestamp;
 
+            // get respective average of all compass readings
+            avgCompass = getCompassAvg(qCompass);
+
             //File.AppendAllText(Application.persistentDataPath + "/compass.txt", "time: " + lastCompassTimeStamp + "\n");
             compassText.text = "heading: " + heading +
                 "\ncamY: " + camY +
                 "\nheading - camy: " + hmc +
                 "\nheading - camy+360: " + (hmc + 360) +
-                "\n(heading-camy+360) %360: " + toRotate;
+                "\n(heading-camy+360) %360: " + toRotate+
+                "\navg: " + avgCompass;
+
         }
     }
     float getCompassAvg(Queue<int> q)
