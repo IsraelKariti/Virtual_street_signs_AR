@@ -31,6 +31,8 @@ public class SpinCity : MonoBehaviour
     private long lastAndroidGPSTimeStamp = 0;
     private float avgCompass;
     AndroidJavaObject gpsProvider;
+    double camDistFromOrigin;
+    double headingFromCamToOrigin;
     private void Awake()
     {
         if (!Input.location.isEnabledByUser) //FIRST IM CHACKING FOR PERMISSION IF "true" IT MEANS USER GAVED PERMISSION FOR USING LOCATION INFORMATION
@@ -184,14 +186,14 @@ public class SpinCity : MonoBehaviour
         AndroidGPSText.text += "\nar z: " + cam.transform.position.z;
 
         // calculate the distance between the camera and the origin
-        double camDistFromOrigin = Math.Sqrt(Math.Pow(cam.transform.position.x, 2) + Math.Pow(cam.transform.position.z, 2));
+        camDistFromOrigin = Math.Sqrt(Math.Pow(cam.transform.position.x, 2) + Math.Pow(cam.transform.position.z, 2));
 
         File.AppendAllText(Application.persistentDataPath + "/Androidcamdist.txt", "dist: " + camDistFromOrigin + "\n");
         File.AppendAllText(Application.persistentDataPath + "/unified.txt", "ar dist: " + camDistFromOrigin + "\n");
         AndroidGPSText.text += "\nar dist: " + camDistFromOrigin;
-
+        
         // calculate the heading between the current camera position and the origin in world coordinate system
-        double headingFromCamToOrigin = getHeadingToOriginInRealWorldCoordinateSystem();
+        headingFromCamToOrigin = getHeadingToOriginInRealWorldCoordinateSystem();
         File.AppendAllText(Application.persistentDataPath + "/Androidcam_heading.txt", "heading: " + headingFromCamToOrigin + "\n");
         File.AppendAllText(Application.persistentDataPath + "/unified.txt", "real heading: " + headingFromCamToOrigin + "\n");
         AndroidGPSText.text += "\nreal heading: " + headingFromCamToOrigin;
