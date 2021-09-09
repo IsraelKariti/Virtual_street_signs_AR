@@ -1570,7 +1570,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d3cb43aa2158b34da86b3d469785d58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  loadingText: {fileID: 463930439}
+  compassText: {fileID: 463930439}
   GPSText: {fileID: 186448949}
   stat: {fileID: 1894159242}
   AndroidText: {fileID: 1843204508}
