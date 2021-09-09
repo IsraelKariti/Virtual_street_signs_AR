@@ -264,6 +264,7 @@ public class SpinCity : MonoBehaviour
             int camY = (int)cam.transform.eulerAngles.y;
 
             // add the new compass reading to the queue
+            int hmc = heading - camY;
             int toRotate = (heading + 360 - camY) % 360;
             qCompass.Enqueue(toRotate);
 
@@ -275,10 +276,11 @@ public class SpinCity : MonoBehaviour
             lastCompassTimeStamp = Input.compass.timestamp;
 
             //File.AppendAllText(Application.persistentDataPath + "/compass.txt", "time: " + lastCompassTimeStamp + "\n");
-            compassText.text = "time: " + lastCompassTimeStamp +
-                "\nheading: " + heading +
+            compassText.text = "heading: " + heading +
                 "\ncamY: " + camY +
-                "\ntoRotate: " + toRotate;
+                "\nheading - camy: " + hmc +
+                "\nheading - camy+360: " + (hmc + 360) +
+                "\n(heading-camy+360) %360: " + toRotate;
         }
     }
     float getCompassAvg(Queue<int> q)
