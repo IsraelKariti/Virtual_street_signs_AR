@@ -14,7 +14,7 @@ public class SpinCity : MonoBehaviour
 {
 
     List<InputDevice> devices;
-    public Text loadingText;
+    public Text compassText;
     public Text GPSText;
     public Text stat;
     public Text AndroidText;
@@ -77,6 +77,8 @@ public class SpinCity : MonoBehaviour
             // reset the GPS data
             unityCounter = 0;
             androidCounter = 0;
+            File.Delete(Application.persistentDataPath + "/compass.txt");
+
             File.Delete(Application.persistentDataPath + "/camlat.txt");
             File.Delete(Application.persistentDataPath + "/camlon.txt");
 
@@ -107,7 +109,7 @@ public class SpinCity : MonoBehaviour
             avgCompass = getCompassAvg(qCompass);
             // rotate the virtual city to align with the readings
             transform.eulerAngles = new Vector3(transform.eulerAngles.x, -avgCompass, transform.eulerAngles.z);
-            loadingText.text = "" + (float)qCompass.Count / 10.0f + "%";
+            compassText.text = "" + (float)qCompass.Count / 10.0f + "%";
 
             //GPS
 
@@ -262,7 +264,8 @@ public class SpinCity : MonoBehaviour
             int camY = (int)cam.transform.eulerAngles.y;
 
             // add the new compass reading to the queue
-            qCompass.Enqueue((heading + 360 - camY) % 360);
+            int toRotate = (heading + 360 - camY) % 360;
+            qCompass.Enqueue(toRotate);
 
             // maintain the vector to be of a 1000 samples
             if (qCompass.Count > 1000)
@@ -270,6 +273,12 @@ public class SpinCity : MonoBehaviour
 
             // update the last time a compass was read
             lastCompassTimeStamp = Input.compass.timestamp;
+
+            //File.AppendAllText(Application.persistentDataPath + "/compass.txt", "time: " + lastCompassTimeStamp + "\n");
+            compassText.text = "time: " + lastCompassTimeStamp +
+                "\nheading: " + heading +
+                "\ncamY: " + camY +
+                "\ntoRotate: " + toRotate;
         }
     }
     float getCompassAvg(Queue<int> q)
