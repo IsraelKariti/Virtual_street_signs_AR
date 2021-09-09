@@ -108,6 +108,7 @@ public class SpinCity : MonoBehaviour
             AddCompassRead();
             // get respective average of all compass readings
             avgCompass = getCompassAvg(qCompass);
+            compassText.text += "\navg: " + avgCompass;
             // rotate the virtual city to align with the readings
             transform.eulerAngles = new Vector3(transform.eulerAngles.x, -avgCompass, transform.eulerAngles.z);
             //compassText.text = "" + (float)qCompass.Count / 10.0f + "%";
