@@ -100,6 +100,8 @@ public class SpinCity : MonoBehaviour
             File.Delete(Application.persistentDataPath + "/AndroidoriginlonAVG.txt");
             File.Delete(Application.persistentDataPath + "/Androidoriginlat.txt");
             File.Delete(Application.persistentDataPath + "/Androidoriginlon.txt");
+
+            File.Delete(Application.persistentDataPath + "/Android_gps_calc.txt");
             
         }
         else// AR is tracking:
@@ -199,7 +201,16 @@ public class SpinCity : MonoBehaviour
         AndroidGPSText.text += "\nreal heading: " + headingFromCamToOrigin;
 
         // calculate new lat-lon for the origin 
-        return CalculateOriginLatLon(phoneLat, phoneLon, headingFromCamToOrigin, camDistFromOrigin);
+        Tuple<double, double> orig = CalculateOriginLatLon(phoneLat, phoneLon, headingFromCamToOrigin, camDistFromOrigin);
+
+        File.AppendAllText(Application.persistentDataPath + "/Android_gps_calc.txt", "lat: " + phoneLat + "\n" +
+                                                                                    "lon: " + phoneLon + "\n" +
+                                                                                    "dist: " + camDistFromOrigin + "\n" +
+                                                                                    "heading: " + headingFromCamToOrigin + "\n" +
+                                                                                    "orig lat: " + orig.Item1 + "\n"+
+                                                                                    "orig lon: " + orig.Item2+"\n===========\n\n");
+
+        return orig;
     }
 
     // get the heading between true north and origin(0,0) when the GPS coordinate is the axis
