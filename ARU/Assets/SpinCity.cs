@@ -114,7 +114,7 @@ public class SpinCity : MonoBehaviour
 
             //GPS
 
-            AddUnityGPSRead();
+            //AddUnityGPSRead();
 
             AddAndroidGPSRead();
         }
@@ -131,7 +131,7 @@ public class SpinCity : MonoBehaviour
             Debug.Log("talikar time is bigger");
 
             androidCounter++;
-            AndroidGPSText.text = "counter: " + androidCounter;
+            //AndroidGPSText.text = "counter: " + androidCounter;
             lastAndroidGPSTimeStamp = time;
             // calculate new lat-lon for the origin 
             double lat = gpsProvider.Get<double>("lat");
@@ -248,27 +248,21 @@ public class SpinCity : MonoBehaviour
                 // get the average origin lat-lon in real world coordinates
                 Tuple<double, double> avgGPS = getGPSAvg(qUnityGPSOrigin);
                 
-                GPSText.text = "U LAT:" + Input.location.lastData.latitude +
-                    "\nU LON:" + Input.location.lastData.longitude +
-                    "\nA LAT:" + gpsProvider.Get<double>("lat") +
-                    "\nA LON:" + gpsProvider.Get<double>("lon") +
-                    "\ncounter: " + unityCounter +
-                    //"\ndist: " + camDistFromOrigin +
-                    //"\nheading: " + headingFromCamToOrigin+
-                    "\norigin-lat: \n" + avgGPS.Item1+
-                    "\norigin-lon: \n" + avgGPS.Item2;
+                //GPSText.text = "U LAT:" + Input.location.lastData.latitude +
+                //    "\nU LON:" + Input.location.lastData.longitude +
+                //    "\nA LAT:" + gpsProvider.Get<double>("lat") +
+                //    "\nA LON:" + gpsProvider.Get<double>("lon") +
+                //    "\ncounter: " + unityCounter +
+                //    //"\ndist: " + camDistFromOrigin +
+                //    //"\nheading: " + headingFromCamToOrigin+
+                //    "\norigin-lat: \n" + avgGPS.Item1+
+                //    "\norigin-lon: \n" + avgGPS.Item2;
                       
 
                 lastUnityGPSTimeStamp = Input.location.lastData.timestamp;
             }
         }
     }
-
-    
-
-    
-
-    
 
     // add to the queue only if there is a new compass reading  
     void AddCompassRead()
