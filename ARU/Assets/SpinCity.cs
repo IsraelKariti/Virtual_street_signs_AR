@@ -87,6 +87,7 @@ public class SpinCity : MonoBehaviour
             File.Delete(Application.persistentDataPath + "/Androidcam_z.txt");
             File.Delete(Application.persistentDataPath + "/Androidcam_ARheading.txt");
             File.Delete(Application.persistentDataPath + "/Androidcam_heading.txt");
+            File.Delete(Application.persistentDataPath + "/unified.txt");
             
             File.Delete(Application.persistentDataPath + "/Androidcamlon.txt");
             File.Delete(Application.persistentDataPath + "/Androidcamdist.txt");
@@ -139,6 +140,8 @@ public class SpinCity : MonoBehaviour
             //Log the gps coordinates
             File.AppendAllText(Application.persistentDataPath + "/Androidcamlat.txt", "lat: " + lat + "\n");
             File.AppendAllText(Application.persistentDataPath + "/Androidcamlon.txt", "lon: " + lon + "\n");
+            File.AppendAllText(Application.persistentDataPath + "/unified.txt", "lat read: " + lat + "\n");
+            File.AppendAllText(Application.persistentDataPath + "/unified.txt", "lon read: " + lon + "\n");
 
             // camera gps (USE ONLY WHEN CAMERA IS STATIC)
             //qAndroidGPSCam.Enqueue(new Tuple<double, double>(lat, lon));
@@ -172,18 +175,22 @@ public class SpinCity : MonoBehaviour
     // get the latitude and longitude for the origin
     Tuple<double, double> GetOriginLatLon(double phoneLat, double phoneLon)
     {
-        File.AppendAllText(Application.persistentDataPath + "/Androidcam_x.txt", "dist: " + cam.transform.position.x + "\n");
-        File.AppendAllText(Application.persistentDataPath + "/Androidcam_z.txt", "dist: " + cam.transform.position.z + "\n");
+        File.AppendAllText(Application.persistentDataPath + "/Androidcam_x.txt", "x: " + cam.transform.position.x + "\n");
+        File.AppendAllText(Application.persistentDataPath + "/Androidcam_z.txt", "z: " + cam.transform.position.z + "\n");
+        File.AppendAllText(Application.persistentDataPath + "/unified.txt", "ar x: " + cam.transform.position.x + "\n");
+        File.AppendAllText(Application.persistentDataPath + "/unified.txt", "ar z: " + cam.transform.position.z + "\n");
 
 
         // calculate the distance between the camera and the origin
         double camDistFromOrigin = Math.Sqrt(Math.Pow(cam.transform.position.x, 2) + Math.Pow(cam.transform.position.z, 2));
 
         File.AppendAllText(Application.persistentDataPath + "/Androidcamdist.txt", "dist: " + camDistFromOrigin + "\n");
+        File.AppendAllText(Application.persistentDataPath + "/unified.txt", "ar dist: " + camDistFromOrigin + "\n");
 
         // calculate the heading between the current camera position and the origin in world coordinate system
         double headingFromCamToOrigin = getHeadingToOriginInRealWorldCoordinateSystem();
         File.AppendAllText(Application.persistentDataPath + "/Androidcam_heading.txt", "heading: " + headingFromCamToOrigin + "\n");
+        File.AppendAllText(Application.persistentDataPath + "/unified.txt", "real heading: " + headingFromCamToOrigin + "\n");
 
         // calculate new lat-lon for the origin 
         return CalculateOriginLatLon(phoneLat, phoneLon, headingFromCamToOrigin, camDistFromOrigin);
@@ -195,6 +202,7 @@ public class SpinCity : MonoBehaviour
         // get the angle on the y axis (when z axis is 0 degrees) to the origin
         double AngleToOriginInARcoordinateSystem = getAngleToOriginInARcoordinateSystem();
         File.AppendAllText(Application.persistentDataPath + "/Androidcam_ARheading.txt", "heading: " + AngleToOriginInARcoordinateSystem + "\n");
+        File.AppendAllText(Application.persistentDataPath + "/unified.txt", "ar heading: " + AngleToOriginInARcoordinateSystem + "\n");
 
         // the CW angle the coordinate system needs to rotate to be aligned with true North 
         double diff1 = 360.0 - avgCompass;
@@ -203,6 +211,17 @@ public class SpinCity : MonoBehaviour
         // normalize to positive
         double diff3 = (360 + diff2) % 360.0;
         return diff3;
+    }
+
+    // this angle is based on position of the camera with respect to origin of the AR coordinate system
+    // (NOTICE: it has nothing to do with rotation of the camera!)
+    // return value is angle in degrees in the range of 0.0 to 360.0
+    double getAngleToOriginInARcoordinateSystem()
+    {
+        double angle = Math.Atan2(-cam.transform.position.x, -cam.transform.position.z);
+        angle = angle.ToDegrees();
+        angle = ((angle + 360.0) % 360.0);
+        return angle;
     }
 
     // collect additional GPS sensor reading for calculation
@@ -243,16 +262,7 @@ public class SpinCity : MonoBehaviour
 
     
 
-    // this angle is based on position of the camera with respect to origin of the AR coordinate system
-    // (NOTICE: it has nothing to do with rotation of the camera!)
-    // return value is angle in degrees in the range of 0.0 to 360.0
-    double getAngleToOriginInARcoordinateSystem()
-    {
-        double angle = Math.Atan2(-cam.transform.position.x, -cam.transform.position.z);
-        angle = angle.ToDegrees();
-        angle = ((angle + 360.0) % 360.0);
-        return angle;
-    }
+    
 
     // add to the queue only if there is a new compass reading  
     void AddCompassRead()
