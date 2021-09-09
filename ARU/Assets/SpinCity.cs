@@ -109,7 +109,7 @@ public class SpinCity : MonoBehaviour
             avgCompass = getCompassAvg(qCompass);
             // rotate the virtual city to align with the readings
             transform.eulerAngles = new Vector3(transform.eulerAngles.x, -avgCompass, transform.eulerAngles.z);
-            compassText.text = "" + (float)qCompass.Count / 10.0f + "%";
+            //compassText.text = "" + (float)qCompass.Count / 10.0f + "%";
 
             //GPS
 
