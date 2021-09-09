@@ -17,7 +17,7 @@ public class SpinCity : MonoBehaviour
     public Text compassText;
     public Text GPSText;
     public Text stat;
-    public Text AndroidText;
+    public Text AndroidGPSText;
     public Camera cam;
     private Queue<int> qCompass;
     private Queue<Tuple<double, double>> qUnityGPSOrigin;
@@ -131,7 +131,7 @@ public class SpinCity : MonoBehaviour
             Debug.Log("talikar time is bigger");
 
             androidCounter++;
-            AndroidText.text = "counter: " + androidCounter;
+            AndroidGPSText.text = "counter: " + androidCounter;
             lastAndroidGPSTimeStamp = time;
             // calculate new lat-lon for the origin 
             double lat = gpsProvider.Get<double>("lat");
@@ -142,6 +142,8 @@ public class SpinCity : MonoBehaviour
             File.AppendAllText(Application.persistentDataPath + "/Androidcamlon.txt", "lon: " + lon + "\n");
             File.AppendAllText(Application.persistentDataPath + "/unified.txt", "lat read: " + lat + "\n");
             File.AppendAllText(Application.persistentDataPath + "/unified.txt", "lon read: " + lon + "\n");
+            AndroidGPSText.text = "lat: " + lat;
+            AndroidGPSText.text += "\nlon: " + lon;
 
             // camera gps (USE ONLY WHEN CAMERA IS STATIC)
             //qAndroidGPSCam.Enqueue(new Tuple<double, double>(lat, lon));
@@ -179,18 +181,21 @@ public class SpinCity : MonoBehaviour
         File.AppendAllText(Application.persistentDataPath + "/Androidcam_z.txt", "z: " + cam.transform.position.z + "\n");
         File.AppendAllText(Application.persistentDataPath + "/unified.txt", "ar x: " + cam.transform.position.x + "\n");
         File.AppendAllText(Application.persistentDataPath + "/unified.txt", "ar z: " + cam.transform.position.z + "\n");
-
+        AndroidGPSText.text += "\nar x: " + cam.transform.position.x;
+        AndroidGPSText.text += "\nar z: " + cam.transform.position.z;
 
         // calculate the distance between the camera and the origin
         double camDistFromOrigin = Math.Sqrt(Math.Pow(cam.transform.position.x, 2) + Math.Pow(cam.transform.position.z, 2));
 
         File.AppendAllText(Application.persistentDataPath + "/Androidcamdist.txt", "dist: " + camDistFromOrigin + "\n");
         File.AppendAllText(Application.persistentDataPath + "/unified.txt", "ar dist: " + camDistFromOrigin + "\n");
+        AndroidGPSText.text += "\nar dist: " + camDistFromOrigin;
 
         // calculate the heading between the current camera position and the origin in world coordinate system
         double headingFromCamToOrigin = getHeadingToOriginInRealWorldCoordinateSystem();
         File.AppendAllText(Application.persistentDataPath + "/Androidcam_heading.txt", "heading: " + headingFromCamToOrigin + "\n");
         File.AppendAllText(Application.persistentDataPath + "/unified.txt", "real heading: " + headingFromCamToOrigin + "\n");
+        AndroidGPSText.text += "\nreal heading: " + headingFromCamToOrigin;
 
         // calculate new lat-lon for the origin 
         return CalculateOriginLatLon(phoneLat, phoneLon, headingFromCamToOrigin, camDistFromOrigin);
@@ -203,6 +208,7 @@ public class SpinCity : MonoBehaviour
         double AngleToOriginInARcoordinateSystem = getAngleToOriginInARcoordinateSystem();
         File.AppendAllText(Application.persistentDataPath + "/Androidcam_ARheading.txt", "heading: " + AngleToOriginInARcoordinateSystem + "\n");
         File.AppendAllText(Application.persistentDataPath + "/unified.txt", "ar heading: " + AngleToOriginInARcoordinateSystem + "\n");
+        AndroidGPSText.text += "\nar heading: " + AngleToOriginInARcoordinateSystem;
 
         // the CW angle the coordinate system needs to rotate to be aligned with true North 
         double diff1 = 360.0 - avgCompass;
