@@ -164,7 +164,7 @@ public class SpinCity : MonoBehaviour
             File.AppendAllText(Application.persistentDataPath + "/unified.txt", "lat read: " + lat + "\n");
             File.AppendAllText(Application.persistentDataPath + "/unified.txt", "lon read: " + lon + "\n");
             AndroidGPSText.text = "count: " + androidCounter;
-            AndroidGPSText.text = "\nlat: " + lat;
+            AndroidGPSText.text += "\nlat: " + lat;
             AndroidGPSText.text += "\nlon: " + lon;
 
             // camera gps (USE ONLY WHEN CAMERA IS STATIC)
