@@ -7,9 +7,14 @@
 //0.00001° = 1.11 m
 //0.000001° = 0.11 m(7 decimals, cm accuracy)
 
-//Earth is a sphere with a circumference of 40075 km
-//Length in meters of 1° of latitude = always 111.32 km
+//Earth is a sphere with a circumference of 40075 km == 40075000 m == 4007500000 cm
+//Length in meters of 1° of latitude = always 111.32 km = 40075 km / 360
 //Length in meters of 1° of longitude = 40075 km * cos( latitude ) / 360
+// lat 1 cm = 0.00000008983156581 degrees
+
+// lon 1 cm = 0.00000006273659336 degrees = cos(33.312090)*lat  = 0.8356914933 (QIRYAT-SHMONA)
+// lon 1 cm = 0.00000007678791061 degrees = cos(31.2624908)*lat = 0.8547987549 (BEER-SHEVA)
+// lon 1 cm = 0.00000007813607031 degrees = cos(29.563851)*lat  = 0.8698063938 (EILAT)
 
 using System.Collections;
 using System.Collections.Generic;
