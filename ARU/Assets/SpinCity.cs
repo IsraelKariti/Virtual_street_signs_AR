@@ -188,8 +188,8 @@ public class SpinCity : MonoBehaviour
             //File.AppendAllText(Application.persistentDataPath + "/AndroidoriginlonAVG.txt", "lon: " + avgGPSOrigin.Item2 + "\n");
 
             //Debug.Log("talikar avg...");
-            AndroidGPSText.text += "\navg lat: " + avgGPSOrigin.Item1;
-            AndroidGPSText.text += "\navg lon: " + avgGPSOrigin.Item2;
+            AndroidGPSText.text += "\navg orig lat: " + avgGPSOrigin.Item1;
+            AndroidGPSText.text += "\navg orig lon: " + avgGPSOrigin.Item2;
             //"\ncounter: " + androidCounter;// +
             //"\norigin-lat: \n" + avgGPSOrigin.Item1 +
             //"\norigin-lon: \n" + avgGPSOrigin.Item2;
