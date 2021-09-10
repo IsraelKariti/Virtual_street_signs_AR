@@ -223,6 +223,8 @@ public class SpinCity : MonoBehaviour
 
         double east = camDistFromOrigin* Math.Sin(headingFromCamToOrigin);
         double north = camDistFromOrigin* Math.Cos(headingFromCamToOrigin);
+        AndroidGPSText.text += "\neast: " + east;
+        AndroidGPSText.text += "\nnorth: " + north;
 
         File.AppendAllText(Application.persistentDataPath + "/Android_gps_calc.txt", "lat: " + phoneLat + "\n" +
                                                                                     "lon: " + phoneLon + "\n" +
