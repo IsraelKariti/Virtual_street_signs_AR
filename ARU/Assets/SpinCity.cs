@@ -10,11 +10,11 @@
 //Earth is a sphere with a circumference of 40075 km == 40075000 m == 4007500000 cm
 //Length in meters of 1° of latitude = always 111.32 km = 40075 km / 360
 //Length in meters of 1° of longitude = 40075 km * cos( latitude ) / 360
-// lat 1 cm = 0.00000008983156581 degrees
+// lat 1 m = 0.000008983156581 degrees
 
-// lon 1 cm = 0.00000006273659336 degrees = cos(33.312090)*lat  = 0.8356914933 (QIRYAT-SHMONA)
-// lon 1 cm = 0.00000007678791061 degrees = cos(31.2624908)*lat = 0.8547987549 (BEER-SHEVA)
-// lon 1 cm = 0.00000007813607031 degrees = cos(29.563851)*lat  = 0.8698063938 (EILAT)
+// lon 1 m = 0.000006273659336 degrees = cos(33.312090)*lat  = 0.8356914933 (QIRYAT-SHMONA)
+// lon 1 m = 0.000007678791061 degrees = cos(31.2624908)*lat = 0.8547987549 (BEER-SHEVA)
+// lon 1 m = 0.000007813607031 degrees = cos(29.563851)*lat  = 0.8698063938 (EILAT)
 
 using System.Collections;
 using System.Collections.Generic;
@@ -225,6 +225,12 @@ public class SpinCity : MonoBehaviour
         double north = camDistFromOrigin* Math.Cos(headingFromCamToOrigin.ToRadians());
         AndroidGPSText.text += "\neast: " + east;
         AndroidGPSText.text += "\nnorth: " + north;
+
+
+        double latMeterAngle = 0.000008983156581;
+        double lonMeterAngle = 0.000008983156581*Math.Cos(phoneLat.ToRadians());
+        AndroidGPSText.text += "\n origin lat: " + phoneLat+ north*latMeterAngle;
+        AndroidGPSText.text += "\n origin lon: " + phoneLon+ east*lonMeterAngle;
 
         File.AppendAllText(Application.persistentDataPath + "/Android_gps_calc.txt", "lat: " + phoneLat + "\n" +
                                                                                     "lon: " + phoneLon + "\n" +
