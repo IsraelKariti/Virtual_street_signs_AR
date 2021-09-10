@@ -180,15 +180,16 @@ public class SpinCity : MonoBehaviour
             //File.AppendAllText(Application.persistentDataPath + "/Androidoriginlon.txt", "lon: " + tup.Item2 + "\n");
 
             // add the calculated lat-lon of the origin to the vector
-            //qAndroidGPSOrigin.Enqueue(tup);
+            qAndroidGPSOrigin.Enqueue(tup);
 
             // get the average origin lat-lon in real world coordinates
-            //Tuple<double, double> avgGPSOrigin = getGPSAvg(qAndroidGPSOrigin);
+            Tuple<double, double> avgGPSOrigin = getGPSAvg(qAndroidGPSOrigin);
             //File.AppendAllText(Application.persistentDataPath + "/AndroidoriginlatAVG.txt", "lat: " + avgGPSOrigin.Item1 + "\n");
             //File.AppendAllText(Application.persistentDataPath + "/AndroidoriginlonAVG.txt", "lon: " + avgGPSOrigin.Item2 + "\n");
 
             //Debug.Log("talikar avg...");
-            //AndroidText.text = "Android count: " + androidCounter +
+            AndroidGPSText.text += "\navg lat: " + avgGPSOrigin.Item1;
+            AndroidGPSText.text += "\navg lon: " + avgGPSOrigin.Item2;
             //"\ncounter: " + androidCounter;// +
             //"\norigin-lat: \n" + avgGPSOrigin.Item1 +
             //"\norigin-lon: \n" + avgGPSOrigin.Item2;
@@ -219,7 +220,7 @@ public class SpinCity : MonoBehaviour
         AndroidGPSText.text += "\nreal heading: " + headingFromCamToOrigin;
 
         // calculate new lat-lon for the origin 
-        Tuple<double, double> orig = CalculateOriginLatLon(phoneLat, phoneLon, headingFromCamToOrigin, camDistFromOrigin);
+        //Tuple<double, double> orig = CalculateOriginLatLon(phoneLat, phoneLon, headingFromCamToOrigin, camDistFromOrigin);
 
         double east = camDistFromOrigin* Math.Sin(headingFromCamToOrigin.ToRadians());
         double north = camDistFromOrigin* Math.Cos(headingFromCamToOrigin.ToRadians());
@@ -229,8 +230,12 @@ public class SpinCity : MonoBehaviour
 
         double latMeterAngle = 0.000008983156581;
         double lonMeterAngle = 0.000008983156581*Math.Cos(phoneLat.ToRadians());
-        AndroidGPSText.text += "\n origin lat: " + phoneLat+ north*latMeterAngle;
-        AndroidGPSText.text += "\n origin lon: " + phoneLon+ east*lonMeterAngle;
+        double origLat = phoneLat + north * latMeterAngle;
+        double origLon = phoneLon + east * lonMeterAngle;
+        AndroidGPSText.text += "\n origin lat: " + origLat;
+        AndroidGPSText.text += "\n origin lon: " + origLon;
+
+        Tuple<double, double> orig = new Tuple<double, double>(origLat, origLon);
 
         File.AppendAllText(Application.persistentDataPath + "/Android_gps_calc.txt", "lat: " + phoneLat + "\n" +
                                                                                     "lon: " + phoneLon + "\n" +
