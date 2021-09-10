@@ -221,8 +221,8 @@ public class SpinCity : MonoBehaviour
         // calculate new lat-lon for the origin 
         Tuple<double, double> orig = CalculateOriginLatLon(phoneLat, phoneLon, headingFromCamToOrigin, camDistFromOrigin);
 
-        double east = camDistFromOrigin* Math.Sin(headingFromCamToOrigin);
-        double north = camDistFromOrigin* Math.Cos(headingFromCamToOrigin);
+        double east = camDistFromOrigin* Math.Sin(headingFromCamToOrigin.ToRadians());
+        double north = camDistFromOrigin* Math.Cos(headingFromCamToOrigin.ToRadians());
         AndroidGPSText.text += "\neast: " + east;
         AndroidGPSText.text += "\nnorth: " + north;
 
