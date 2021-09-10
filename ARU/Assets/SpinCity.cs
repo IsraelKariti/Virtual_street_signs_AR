@@ -221,12 +221,15 @@ public class SpinCity : MonoBehaviour
         // calculate new lat-lon for the origin 
         Tuple<double, double> orig = CalculateOriginLatLon(phoneLat, phoneLon, headingFromCamToOrigin, camDistFromOrigin);
 
+        double east = camDistFromOrigin* Math.Sin(headingFromCamToOrigin);
+        double north = camDistFromOrigin* Math.Cos(headingFromCamToOrigin);
+
         File.AppendAllText(Application.persistentDataPath + "/Android_gps_calc.txt", "lat: " + phoneLat + "\n" +
                                                                                     "lon: " + phoneLon + "\n" +
                                                                                     "dist: " + camDistFromOrigin + "\n" +
                                                                                     "heading: " + headingFromCamToOrigin + "\n" +
-                                                                                    "orig lat: " + orig.Item1 + "\n"+
-                                                                                    "orig lon: " + orig.Item2+"\n===========\n\n");
+                                                                                    "east: " + east + "\n" +
+                                                                                    "north: " + north + "\n") ;
 
         return orig;
     }
