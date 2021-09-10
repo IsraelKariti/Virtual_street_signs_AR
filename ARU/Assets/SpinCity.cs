@@ -1,3 +1,16 @@
+//At the equator for longitude and for latitude anywhere, the following approximations are valid:
+//1° = 111 km(or 60 nautical miles)
+//0.1° = 11.1 km
+//0.01° = 1.11 km(2 decimals, km accuracy)
+//0.001° = 111 m
+//0.0001° = 11.1 m
+//0.00001° = 1.11 m
+//0.000001° = 0.11 m(7 decimals, cm accuracy)
+
+//Earth is a sphere with a circumference of 40075 km
+//Length in meters of 1° of latitude = always 111.32 km
+//Length in meters of 1° of longitude = 40075 km * cos( latitude ) / 360
+
 using System.Collections;
 using System.Collections.Generic;
 using System;
@@ -212,7 +225,27 @@ public class SpinCity : MonoBehaviour
 
         return orig;
     }
+    public Tuple<double, double> CalculateOriginLatLon(double fmLat, double fmLon, double heading, double distanceKm)
+    {
 
+        double bearingR = heading.ToRadians();
+
+        double latR = fmLat.ToRadians();
+        double lonR = fmLon.ToRadians();
+
+        double distanceToRadius = distanceKm / EarthRadius;
+
+        double newLatR = Math.Asin(Math.Sin(latR) * Math.Cos(distanceToRadius)
+                        + Math.Cos(latR) * Math.Sin(distanceToRadius) * Math.Cos(bearingR));
+
+        double newLonR = lonR + Math.Atan2(
+                                            Math.Sin(bearingR) * Math.Sin(distanceToRadius) * Math.Cos(latR),
+                                            Math.Cos(distanceToRadius) - Math.Sin(latR) * Math.Sin(newLatR)
+                                           );
+
+        return new Tuple<double, double>(newLatR.ToDegrees(), newLonR.ToDegrees());
+
+    }
     // get the heading between true north and origin(0,0) when the GPS coordinate is the axis
     double getHeadingToOriginInRealWorldCoordinateSystem()
     {
@@ -333,27 +366,7 @@ public class SpinCity : MonoBehaviour
         sumLon=sumLon/ qGPS.Count;
         return new Tuple<double, double>(sumLat,sumLon);
     }
-    public Tuple<double, double> CalculateOriginLatLon(double fmLat, double fmLon, double heading, double distanceKm)
-    {
-
-        double bearingR = heading.ToRadians();
-
-        double latR = fmLat.ToRadians();
-        double lonR = fmLon.ToRadians();
-
-        double distanceToRadius = distanceKm / EarthRadius;
-
-        double newLatR = Math.Asin(Math.Sin(latR) * Math.Cos(distanceToRadius)
-                        + Math.Cos(latR) * Math.Sin(distanceToRadius) * Math.Cos(bearingR));
-
-        double newLonR = lonR + Math.Atan2(
-                                            Math.Sin(bearingR) * Math.Sin(distanceToRadius) * Math.Cos(latR),
-                                            Math.Cos(distanceToRadius) - Math.Sin(latR) * Math.Sin(newLatR)
-                                           );
-
-        return new Tuple<double, double>(newLatR.ToDegrees(), newLonR.ToDegrees());
-
-    }
+    
 }
 public static class NumericExtensions
 {
