@@ -4,7 +4,7 @@
 //0.01° = 1.11 km(2 decimals, km accuracy)
 //0.001° = 111 m
 //0.0001° = 11.1 m
-//0.00001° = 1.11 m
+//0.00001° = 1.11 m 
 //0.000001° = 0.11 m(7 decimals, cm accuracy)
 
 //Earth is a sphere with a circumference of 40075 km == 40075000 m == 4007500000 cm
@@ -15,7 +15,7 @@
 // lon 1 m = 0.000006273659336 degrees = cos(33.312090)*lat  = 0.8356914933 (QIRYAT-SHMONA)
 // lon 1 m = 0.000007678791061 degrees = cos(31.2624908)*lat = 0.8547987549 (BEER-SHEVA)
 // lon 1 m = 0.000007813607031 degrees = cos(29.563851)*lat  = 0.8698063938 (EILAT)
-
+// blu blu
 using System.Collections;
 using System.Collections.Generic;
 using System;
@@ -47,6 +47,7 @@ public class SpinCity : MonoBehaviour
     private double lastCompassTimeStamp;
     private double lastUnityGPSTimeStamp = 0;
     private long lastAndroidGPSTimeStamp = 0;
+    public static int toRotate;
     private float avgCompass;
     AndroidJavaObject gpsProvider;
     double camDistFromOrigin;
@@ -141,7 +142,40 @@ public class SpinCity : MonoBehaviour
         }
 
     }
+    // add to the queue only if there is a new compass reading  
+    void AddCompassRead()
+    {
+        // check if the compass reading at this frame has a new timestamp
+        if (Input.compass.timestamp > lastCompassTimeStamp)
+        {
+            int heading = (int)Input.compass.trueHeading;
+            int camY = (int)cam.transform.eulerAngles.y;
 
+            // add the new compass reading to the queue
+            int hmc = heading - camY;
+            toRotate = (heading + 360 - camY) % 360;
+            qCompass.Enqueue(toRotate);
+
+            // maintain the vector to be of a 1000 samples
+            if (qCompass.Count > 1000)
+                qCompass.Dequeue();
+
+            // update the last time a compass was read
+            lastCompassTimeStamp = Input.compass.timestamp;
+
+            // get respective average of all compass readings
+            avgCompass = getCompassAvg(qCompass);
+
+            //File.AppendAllText(Application.persistentDataPath + "/compass.txt", "time: " + lastCompassTimeStamp + "\n");
+            compassText.text = "heading: " + heading +
+                "\ncamY: " + camY +
+                "\nheading - camy: " + hmc +
+                "\nheading - camy+360: " + (hmc + 360) +
+                "\n(heading-camy+360) %360: " + toRotate +
+                "\navg: " + avgCompass;
+
+        }
+    }
     private void AddAndroidGPSRead()
     {
         long time = gpsProvider.Get<long>("time");
@@ -293,6 +327,7 @@ public class SpinCity : MonoBehaviour
     {
         double angle = Math.Atan2(-cam.transform.position.x, -cam.transform.position.z);
         angle = angle.ToDegrees();
+        // normalize to range 0 - 360
         angle = ((angle + 360.0) % 360.0);
         return angle;
     }
@@ -331,40 +366,7 @@ public class SpinCity : MonoBehaviour
         }
     }
 
-    // add to the queue only if there is a new compass reading  
-    void AddCompassRead()
-    {
-        // check if the compass reading at this frame has a new timestamp
-        if (Input.compass.timestamp > lastCompassTimeStamp)
-        {
-            int heading = (int)Input.compass.trueHeading;
-            int camY = (int)cam.transform.eulerAngles.y;
-
-            // add the new compass reading to the queue
-            int hmc = heading - camY;
-            int toRotate = (heading + 360 - camY) % 360;
-            qCompass.Enqueue(toRotate);
-
-            // maintain the vector to be of a 1000 samples
-            if (qCompass.Count > 1000)
-                qCompass.Dequeue();
-
-            // update the last time a compass was read
-            lastCompassTimeStamp = Input.compass.timestamp;
-
-            // get respective average of all compass readings
-            avgCompass = getCompassAvg(qCompass);
-
-            //File.AppendAllText(Application.persistentDataPath + "/compass.txt", "time: " + lastCompassTimeStamp + "\n");
-            compassText.text = "heading: " + heading +
-                "\ncamY: " + camY +
-                "\nheading - camy: " + hmc +
-                "\nheading - camy+360: " + (hmc + 360) +
-                "\n(heading-camy+360) %360: " + toRotate+
-                "\navg: " + avgCompass;
-
-        }
-    }
+    
     float getCompassAvg(Queue<int> q)
     {
         float sum = 0;
