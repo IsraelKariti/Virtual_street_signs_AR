@@ -37,6 +37,7 @@ public class SpinCity : MonoBehaviour
     public Text stat;
     public Text AndroidGPSText;
     public Camera cam;
+
     private Queue<int> qCompass;
     private Queue<Tuple<double, double>> qUnityGPSOrigin;
     private Queue<Tuple<double, double>> qAndroidGPSOrigin;
@@ -49,6 +50,8 @@ public class SpinCity : MonoBehaviour
     private long lastAndroidGPSTimeStamp = 0;
     public static int toRotate;
     private float avgCompass;
+    AndroidJavaObject androidCompassProvider;
+    long androidCompassTime;
     AndroidJavaObject gpsProvider;
     double camDistFromOrigin;
     double headingFromCamToOrigin;
@@ -81,7 +84,9 @@ public class SpinCity : MonoBehaviour
         //instantiate the android plugin
         gpsProvider = new AndroidJavaObject("com.example.gpsplugin.GPSProvider", unityActivity);
 
-
+        //instantiate the android plugin
+        androidCompassProvider = new AndroidJavaObject("com.example.compasslib.CompassLib", unityActivity);
+        androidCompassTime = 0;
     }
     // Update is called once per frame
     void Update()
@@ -367,7 +372,7 @@ public class SpinCity : MonoBehaviour
     }
 
     
-    float getCompassAvg(Queue<int> q)
+    public static float getCompassAvg(Queue<int> q)
     {
         float sum = 0;
         foreach (int f in q)
