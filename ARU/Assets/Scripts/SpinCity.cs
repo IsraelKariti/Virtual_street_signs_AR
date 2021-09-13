@@ -162,8 +162,8 @@ public class SpinCity : MonoBehaviour
             qCompass.Enqueue(toRotate);
 
             // maintain the vector to be of a 1000 samples
-            if (qCompass.Count > 1000)
-                qCompass.Dequeue();
+            //if (qCompass.Count > 1000)
+            //    qCompass.Dequeue();
 
             // update the last time a compass was read
             lastCompassTimeStamp = Input.compass.timestamp;
