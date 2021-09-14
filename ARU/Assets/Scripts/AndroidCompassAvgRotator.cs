@@ -13,8 +13,8 @@ public class AndroidCompassAvgRotator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float rotate = SpinCity.getCompassAvg(AndroidCompassMover.qAndroidCompass);
-        transform.eulerAngles = new Vector3(transform.eulerAngles.x, -rotate, transform.eulerAngles.z);
+        //float rotate = SpinCity.getCompassAvg(AndroidCompassMover.qAndroidCompass);
+        //transform.eulerAngles = new Vector3(transform.eulerAngles.x, -rotate, transform.eulerAngles.z);
 
     }
 
