@@ -160,35 +160,31 @@ public class SpinCity : MonoBehaviour
     // add to the queue only if there is a new compass reading  
     void AddCompassRead()
     {
-        Debug.Log("talikar start compass...");
         long act = androidCompassProvider.Get<long>("time");
         // check if the compass reading at this frame has a new timestamp
         if (act > androidCompassTime)
         {
             androidCompassTime = act;
-            Debug.Log("talikar start time...");
+
+            bool accurate = androidCompassProvider.Get<bool>("accurate");
+
 
             int heading = androidCompassProvider.Get<int>("azimuth");
             //int camY = (int)cam.transform.eulerAngles.y;
             int camY = getCamY(); //CapMove.yRotAR;
             int camParentY = (int)cam.transform.rotation.eulerAngles.y;
-            Debug.Log("talikar 1...");
 
             // add the new compass reading to the queue
             int diffHeading = heading - camY;//range [-360,+360]
             toRotate360 = (diffHeading + 360) % 360; // range of [0-360]
             toRotate180 = diffHeading < -180 ? diffHeading + 360 : diffHeading > 180 ? diffHeading - 360 : diffHeading;// range [-180,+180]
-            Debug.Log("talikar 2...");
 
             //qCompass.Enqueue(toRotate);
             qCompass360.Enqueue(toRotate360);
-            Debug.Log("talikar 3...");
 
             qCompass180.Enqueue(toRotate180);
-            Debug.Log("talikar 4...");
 
             qCompassABS180.Enqueue(Math.Abs(toRotate180));
-            Debug.Log("talikar 5...");
 
             // maintain the vector to be of a 1000 samples
             //if (qCompass.Count > 1000)
@@ -222,7 +218,8 @@ public class SpinCity : MonoBehaviour
                 "\nheading - camy: " + diffHeading +
                 "\nheading - camy+360: " + (diffHeading + 360) +
                 "\n(heading-camy+360) %360: " + toRotate360 +
-                "\navg: " + avgCompass;
+                "\navg: " + avgCompass +
+                "\naccurate: " + accurate;
 
         }
     }
