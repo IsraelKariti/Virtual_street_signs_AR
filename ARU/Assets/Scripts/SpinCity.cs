@@ -39,6 +39,9 @@ public class SpinCity : MonoBehaviour
     public Camera cam;
 
     private Queue<int> qCompass;
+    private Queue<int> qCompass360;// the angles in range of [0-360]
+    private Queue<int> qCompass180;// the angles in range of [-180,+180]
+    private Queue<int> qCompassABS180;// the ansolute distances from 0 in range [0, 180]
     private Queue<Tuple<double, double>> qUnityGPSOrigin;
     private Queue<Tuple<double, double>> qAndroidGPSOrigin;
     private Queue<Tuple<double, double>> qAndroidGPSCam;
@@ -48,8 +51,12 @@ public class SpinCity : MonoBehaviour
     private double lastCompassTimeStamp;
     private double lastUnityGPSTimeStamp = 0;
     private long lastAndroidGPSTimeStamp = 0;
-    public static int toRotate;
+    public static int toRotate360;
+    public static int toRotate180;
     private float avgCompass;
+    private float avgCompass360;
+    private float avgCompass180;
+    private float avgCompassABS180;
     AndroidJavaObject androidCompassProvider;
     long androidCompassTime;
     AndroidJavaObject gpsProvider;
@@ -68,6 +75,9 @@ public class SpinCity : MonoBehaviour
         Input.compass.enabled = true;
         Input.location.Start(0.000000f,0.000000f);
         qCompass = new Queue<int>();
+        qCompass180 = new Queue<int>();
+        qCompass360 = new Queue<int>();
+        qCompassABS180 = new Queue<int>();
         qUnityGPSOrigin = new Queue<Tuple<double, double>>();
         qAndroidGPSOrigin = new Queue<Tuple<double, double>>();
         qAndroidGPSCam = new Queue<Tuple<double, double>>();
@@ -103,29 +113,29 @@ public class SpinCity : MonoBehaviour
             // reset the GPS data
             unityCounter = 0;
             androidCounter = 0;
-            File.Delete(Application.persistentDataPath + "/compass.txt");
+            //File.Delete(Application.persistentDataPath + "/compass.txt");
 
-            File.Delete(Application.persistentDataPath + "/camlat.txt");
-            File.Delete(Application.persistentDataPath + "/camlon.txt");
+            //File.Delete(Application.persistentDataPath + "/camlat.txt");
+            //File.Delete(Application.persistentDataPath + "/camlon.txt");
 
-            File.Delete(Application.persistentDataPath + "/Androidcamlat.txt");
-            File.Delete(Application.persistentDataPath + "/Androidcam_x.txt");
-            File.Delete(Application.persistentDataPath + "/Androidcam_z.txt");
-            File.Delete(Application.persistentDataPath + "/Androidcam_ARheading.txt");
-            File.Delete(Application.persistentDataPath + "/Androidcam_heading.txt");
-            File.Delete(Application.persistentDataPath + "/unified.txt");
+            //File.Delete(Application.persistentDataPath + "/Androidcamlat.txt");
+            //File.Delete(Application.persistentDataPath + "/Androidcam_x.txt");
+            //File.Delete(Application.persistentDataPath + "/Androidcam_z.txt");
+            //File.Delete(Application.persistentDataPath + "/Androidcam_ARheading.txt");
+            //File.Delete(Application.persistentDataPath + "/Androidcam_heading.txt");
+            //File.Delete(Application.persistentDataPath + "/unified.txt");
             
-            File.Delete(Application.persistentDataPath + "/Androidcamlon.txt");
-            File.Delete(Application.persistentDataPath + "/Androidcamdist.txt");
+            //File.Delete(Application.persistentDataPath + "/Androidcamlon.txt");
+            //File.Delete(Application.persistentDataPath + "/Androidcamdist.txt");
 
-            File.Delete(Application.persistentDataPath + "/AndroidcamlatAVG.txt");
-            File.Delete(Application.persistentDataPath + "/AndroidcamlonAVG.txt");
-            File.Delete(Application.persistentDataPath + "/AndroidoriginlatAVG.txt");
-            File.Delete(Application.persistentDataPath + "/AndroidoriginlonAVG.txt");
-            File.Delete(Application.persistentDataPath + "/Androidoriginlat.txt");
-            File.Delete(Application.persistentDataPath + "/Androidoriginlon.txt");
+            //File.Delete(Application.persistentDataPath + "/AndroidcamlatAVG.txt");
+            //File.Delete(Application.persistentDataPath + "/AndroidcamlonAVG.txt");
+            //File.Delete(Application.persistentDataPath + "/AndroidoriginlatAVG.txt");
+            //File.Delete(Application.persistentDataPath + "/AndroidoriginlonAVG.txt");
+            //File.Delete(Application.persistentDataPath + "/Androidoriginlat.txt");
+            //File.Delete(Application.persistentDataPath + "/Androidoriginlon.txt");
 
-            File.Delete(Application.persistentDataPath + "/Android_gps_calc.txt");
+            //File.Delete(Application.persistentDataPath + "/Android_gps_calc.txt");
             
         }
         else// AR is tracking:
@@ -150,21 +160,35 @@ public class SpinCity : MonoBehaviour
     // add to the queue only if there is a new compass reading  
     void AddCompassRead()
     {
+        Debug.Log("talikar start compass...");
         long act = androidCompassProvider.Get<long>("time");
         // check if the compass reading at this frame has a new timestamp
         if (act > androidCompassTime)
         {
             androidCompassTime = act;
+            Debug.Log("talikar start time...");
 
             int heading = androidCompassProvider.Get<int>("azimuth");
             //int camY = (int)cam.transform.eulerAngles.y;
-            int camY = CapMove.yRotAR;
+            int camY = getCamY(); //CapMove.yRotAR;
             int camParentY = (int)cam.transform.rotation.eulerAngles.y;
+            Debug.Log("talikar 1...");
 
             // add the new compass reading to the queue
-            int hmc = heading - camY;
-            toRotate = (heading + 360 - camY) % 360;
-            qCompass.Enqueue(toRotate);
+            int diffHeading = heading - camY;//range [-360,+360]
+            toRotate360 = (diffHeading + 360) % 360; // range of [0-360]
+            toRotate180 = diffHeading < -180 ? diffHeading + 360 : diffHeading > 180 ? diffHeading - 360 : diffHeading;// range [-180,+180]
+            Debug.Log("talikar 2...");
+
+            //qCompass.Enqueue(toRotate);
+            qCompass360.Enqueue(toRotate360);
+            Debug.Log("talikar 3...");
+
+            qCompass180.Enqueue(toRotate180);
+            Debug.Log("talikar 4...");
+
+            qCompassABS180.Enqueue(Math.Abs(toRotate180));
+            Debug.Log("talikar 5...");
 
             // maintain the vector to be of a 1000 samples
             //if (qCompass.Count > 1000)
@@ -174,18 +198,40 @@ public class SpinCity : MonoBehaviour
             //lastCompassTimeStamp = Input.compass.timestamp;
 
             // get respective average of all compass readings
-            avgCompass = getCompassAvg(qCompass);
+            //avgCompass = getCompassAvg(qCompass);
 
+            avgCompass360 = getCompassAvg(qCompass360);
+            avgCompass180 = getCompassAvg(qCompass180);
+            avgCompassABS180 = getCompassAvg(qCompassABS180);
+            Debug.Log("talikar 6...");
+
+            if (avgCompassABS180 > 90)
+            {
+                avgCompass = avgCompass360;
+            }
+            else
+            {
+                avgCompass = avgCompass180;
+                avgCompass = (avgCompass + 360) % 360;
+            }
             //File.AppendAllText(Application.persistentDataPath + "/compass.txt", "time: " + lastCompassTimeStamp + "\n");
             compassText.text = "heading: " + heading +
                 "\ncamY: " + camY +
                 "\ncamParentY: " + camParentY +
-                "\nheading - camy: " + hmc +
-                "\nheading - camy+360: " + (hmc + 360) +
-                "\n(heading-camy+360) %360: " + toRotate +
+                "\ndist: " + CapMove.dist +
+                "\nheading - camy: " + diffHeading +
+                "\nheading - camy+360: " + (diffHeading + 360) +
+                "\n(heading-camy+360) %360: " + toRotate360 +
                 "\navg: " + avgCompass;
 
         }
+    }
+    int getCamY()
+    {
+        if (CapMove.dist < 0.06)
+            return (int)cam.transform.rotation.eulerAngles.y;
+        else
+            return CapMove.yRotAR;
     }
     private void AddAndroidGPSRead()
     {

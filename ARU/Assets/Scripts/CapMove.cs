@@ -7,6 +7,7 @@ public class CapMove : MonoBehaviour
 {
     public Text h;
     public static int yRotAR;
+    public static float dist;
     // Start is called before the first frame update
     void Start()
     {
@@ -19,7 +20,10 @@ public class CapMove : MonoBehaviour
         float childZ = transform.position.z;
         float parentX = transform.parent.position.x;
         float parentZ = transform.parent.position.z;
-        yRotAR = ((int)(Mathf.Atan2(childX - parentX, childZ - parentZ)/Mathf.PI*180)+360)% 360;
+        float diffX = childX - parentX;
+        float diffZ = childZ - parentZ;
+        dist = Mathf.Sqrt(Mathf.Pow(diffX, 2) + Mathf.Pow(diffZ, 2));
+        yRotAR = ((int)(Mathf.Atan2(diffX,diffZ)/Mathf.PI*180)+360)% 360;
         h.text = "angle: " +yRotAR;
         //Math.atan2();
     }

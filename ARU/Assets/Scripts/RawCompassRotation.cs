@@ -15,6 +15,6 @@ public class RawCompassRotation : MonoBehaviour
     void Update()
     {
         
-        transform.eulerAngles = new Vector3(transform.eulerAngles.x, -SpinCity.toRotate, transform.eulerAngles.z);
+        transform.eulerAngles = new Vector3(transform.eulerAngles.x, -SpinCity.toRotate360, transform.eulerAngles.z);
     }
 }
