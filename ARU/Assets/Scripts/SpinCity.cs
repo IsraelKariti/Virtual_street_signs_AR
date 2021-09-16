@@ -8,14 +8,15 @@
 //0.000001° = 0.11 m(7 decimals, cm accuracy)
 
 //Earth is a sphere with a circumference of 40075 km == 40075000 m == 4007500000 cm
-//Length in meters of 1° of latitude = always 111.32 km = 40075 km / 360
+//Length in meters of 1° of latitude = always 111.3194444 km = 40075 km / 360
 //Length in meters of 1° of longitude = 40075 km * cos( latitude ) / 360
 // lat 1 m = 0.000008983156581 degrees
 
 // lon 1 m = 0.000006273659336 degrees = cos(33.312090)*lat  = 0.8356914933 (QIRYAT-SHMONA)
 // lon 1 m = 0.000007678791061 degrees = cos(31.2624908)*lat = 0.8547987549 (BEER-SHEVA)
 // lon 1 m = 0.000007813607031 degrees = cos(29.563851)*lat  = 0.8698063938 (EILAT)
-// blu blu
+// 
+// Father's Square: 31.261817, 34.794668
 using System.Collections;
 using System.Collections.Generic;
 using System;
@@ -37,6 +38,7 @@ public class SpinCity : MonoBehaviour
     public Text stat;
     public Text AndroidGPSText;
     public Camera cam;
+    public GameObject kikar;
 
     private Queue<int> qCompass;
     private Queue<int> qCompass360;// the angles in range of [0-360]
@@ -62,12 +64,19 @@ public class SpinCity : MonoBehaviour
     AndroidJavaObject gpsProvider;
     double camDistFromOrigin;
     double headingFromCamToOrigin;
+
+    private double poiLat;
+    private double poiLon;
+
+    private const double oneLatAngleInMeters = 111319.4444;
     private void Awake()
     {
         if (!Input.location.isEnabledByUser) //FIRST IM CHACKING FOR PERMISSION IF "true" IT MEANS USER GAVED PERMISSION FOR USING LOCATION INFORMATION
         {
             Permission.RequestUserPermission(Permission.FineLocation);
         }
+        poiLat = 31.261817;
+        poiLon = 34.794668;
     }
 
     private void Start()
@@ -161,13 +170,12 @@ public class SpinCity : MonoBehaviour
     void AddCompassRead()
     {
         long act = androidCompassProvider.Get<long>("time");
+        int accurate = androidCompassProvider.Get<int>("accurate");
+
         // check if the compass reading at this frame has a new timestamp
-        if (act > androidCompassTime)
+        if (accurate>=2 && act > androidCompassTime)
         {
             androidCompassTime = act;
-
-            bool accurate = androidCompassProvider.Get<bool>("accurate");
-
 
             int heading = androidCompassProvider.Get<int>("azimuth");
             //int camY = (int)cam.transform.eulerAngles.y;
@@ -199,7 +207,6 @@ public class SpinCity : MonoBehaviour
             avgCompass360 = getCompassAvg(qCompass360);
             avgCompass180 = getCompassAvg(qCompass180);
             avgCompassABS180 = getCompassAvg(qCompassABS180);
-            Debug.Log("talikar 6...");
 
             if (avgCompassABS180 > 90)
             {
@@ -279,6 +286,15 @@ public class SpinCity : MonoBehaviour
             //Debug.Log("talikar avg...");
             AndroidGPSText.text += "\navg orig lat: " + avgGPSOrigin.Item1;
             AndroidGPSText.text += "\navg orig lon: " + avgGPSOrigin.Item2;
+            //father's square 31.261817, 34.794668
+            double latDiff = poiLat - avgGPSOrigin.Item1;
+            double lonDiff = poiLon - avgGPSOrigin.Item2;
+
+            double latDiffMeters = latDiff * oneLatAngleInMeters;
+            double lonDiffMeters = lonDiff * Math.Cos(avgGPSOrigin.Item1.ToRadians())* oneLatAngleInMeters;
+            AndroidGPSText.text += "\nlat diff meters: " + latDiffMeters;
+            AndroidGPSText.text += "\nlon diff meters: " + lonDiffMeters;
+            kikar.transform.position = new Vector3((float)latDiffMeters, 0, (float)lonDiffMeters);
             //"\ncounter: " + androidCounter;// +
             //"\norigin-lat: \n" + avgGPSOrigin.Item1 +
             //"\norigin-lon: \n" + avgGPSOrigin.Item2;
@@ -317,7 +333,7 @@ public class SpinCity : MonoBehaviour
         AndroidGPSText.text += "\nnorth: " + north;
 
 
-        double latMeterAngle = 0.000008983156581;
+        double latMeterAngle = 0.000008983156581;// the number of angles for 1 meter
         double lonMeterAngle = 0.000008983156581*Math.Cos(phoneLat.ToRadians());
         double origLat = phoneLat + north * latMeterAngle;
         double origLon = phoneLon + east * lonMeterAngle;
@@ -335,27 +351,27 @@ public class SpinCity : MonoBehaviour
 
         return orig;
     }
-    public Tuple<double, double> CalculateOriginLatLon(double fmLat, double fmLon, double heading, double distanceKm)
-    {
+    //public Tuple<double, double> CalculateOriginLatLon(double fmLat, double fmLon, double heading, double distanceKm)
+    //{
 
-        double bearingR = heading.ToRadians();
+    //    double bearingR = heading.ToRadians();
 
-        double latR = fmLat.ToRadians();
-        double lonR = fmLon.ToRadians();
+    //    double latR = fmLat.ToRadians();
+    //    double lonR = fmLon.ToRadians();
 
-        double distanceToRadius = distanceKm / EarthRadius;
+    //    double distanceToRadius = distanceKm / EarthRadius;
 
-        double newLatR = Math.Asin(Math.Sin(latR) * Math.Cos(distanceToRadius)
-                        + Math.Cos(latR) * Math.Sin(distanceToRadius) * Math.Cos(bearingR));
+    //    double newLatR = Math.Asin(Math.Sin(latR) * Math.Cos(distanceToRadius)
+    //                    + Math.Cos(latR) * Math.Sin(distanceToRadius) * Math.Cos(bearingR));
 
-        double newLonR = lonR + Math.Atan2(
-                                            Math.Sin(bearingR) * Math.Sin(distanceToRadius) * Math.Cos(latR),
-                                            Math.Cos(distanceToRadius) - Math.Sin(latR) * Math.Sin(newLatR)
-                                           );
+    //    double newLonR = lonR + Math.Atan2(
+    //                                        Math.Sin(bearingR) * Math.Sin(distanceToRadius) * Math.Cos(latR),
+    //                                        Math.Cos(distanceToRadius) - Math.Sin(latR) * Math.Sin(newLatR)
+    //                                       );
 
-        return new Tuple<double, double>(newLatR.ToDegrees(), newLonR.ToDegrees());
+    //    return new Tuple<double, double>(newLatR.ToDegrees(), newLonR.ToDegrees());
 
-    }
+    //}
     // get the heading between true north and origin(0,0) when the GPS coordinate is the axis
     double getHeadingToOriginInRealWorldCoordinateSystem()
     {
@@ -387,38 +403,38 @@ public class SpinCity : MonoBehaviour
     }
 
     // collect additional GPS sensor reading for calculation
-    void AddUnityGPSRead()
-    {
-        if (Input.location.status != LocationServiceStatus.Running)
-            GPSText.text = "" + Input.location.status;
-        else
-        {
-            if (Input.location.lastData.timestamp > lastUnityGPSTimeStamp)
-            {
-                unityCounter++;
-                // calculate new lat-lon for the origin 
-                Tuple<double, double> tup = GetOriginLatLon(Input.location.lastData.latitude, Input.location.lastData.longitude);
+    //void AddUnityGPSRead()
+    //{
+    //    if (Input.location.status != LocationServiceStatus.Running)
+    //        GPSText.text = "" + Input.location.status;
+    //    else
+    //    {
+    //        if (Input.location.lastData.timestamp > lastUnityGPSTimeStamp)
+    //        {
+    //            unityCounter++;
+    //            // calculate new lat-lon for the origin 
+    //            Tuple<double, double> tup = GetOriginLatLon(Input.location.lastData.latitude, Input.location.lastData.longitude);
 
-                // add the calculated lat-lon of the origin to the vector
-                qUnityGPSOrigin.Enqueue(tup);
-                // get the average origin lat-lon in real world coordinates
-                Tuple<double, double> avgGPS = getGPSAvg(qUnityGPSOrigin);
+    //            // add the calculated lat-lon of the origin to the vector
+    //            qUnityGPSOrigin.Enqueue(tup);
+    //            // get the average origin lat-lon in real world coordinates
+    //            Tuple<double, double> avgGPS = getGPSAvg(qUnityGPSOrigin);
                 
-                //GPSText.text = "U LAT:" + Input.location.lastData.latitude +
-                //    "\nU LON:" + Input.location.lastData.longitude +
-                //    "\nA LAT:" + gpsProvider.Get<double>("lat") +
-                //    "\nA LON:" + gpsProvider.Get<double>("lon") +
-                //    "\ncounter: " + unityCounter +
-                //    //"\ndist: " + camDistFromOrigin +
-                //    //"\nheading: " + headingFromCamToOrigin+
-                //    "\norigin-lat: \n" + avgGPS.Item1+
-                //    "\norigin-lon: \n" + avgGPS.Item2;
+    //            //GPSText.text = "U LAT:" + Input.location.lastData.latitude +
+    //            //    "\nU LON:" + Input.location.lastData.longitude +
+    //            //    "\nA LAT:" + gpsProvider.Get<double>("lat") +
+    //            //    "\nA LON:" + gpsProvider.Get<double>("lon") +
+    //            //    "\ncounter: " + unityCounter +
+    //            //    //"\ndist: " + camDistFromOrigin +
+    //            //    //"\nheading: " + headingFromCamToOrigin+
+    //            //    "\norigin-lat: \n" + avgGPS.Item1+
+    //            //    "\norigin-lon: \n" + avgGPS.Item2;
                       
 
-                lastUnityGPSTimeStamp = Input.location.lastData.timestamp;
-            }
-        }
-    }
+    //            lastUnityGPSTimeStamp = Input.location.lastData.timestamp;
+    //        }
+    //    }
+    //}
 
     
     public static float getCompassAvg(Queue<int> q)
