@@ -65,8 +65,8 @@ public class SpinCity : MonoBehaviour
     double camDistFromOrigin;
     double headingFromCamToOrigin;
 
-    private double poiLat;
-    private double poiLon;
+    public static double poiLat;
+    public static double poiLon;
 
     private const double oneLatAngleInMeters = 111319.4444;
 
@@ -314,18 +314,14 @@ public class SpinCity : MonoBehaviour
     void getPoi(double lat, double lon)
     {
         AndroidGPSText.text += "\nbtn: " + isCollecting;
-        Debug.Log("talikar iscoll 1 " + isCollecting);
         // this is for the poi
         if (isCollecting > 0)
         {
-            Debug.Log("talikar iscoll 2 " + isCollecting);
 
             CollectorHandler.qLat.Enqueue(lat);
             CollectorHandler.qLon.Enqueue(lon);
-            Debug.Log("talikar iscoll 3 " + isCollecting);
 
             isCollecting--;
-            Debug.Log("talikar iscoll 4 " + isCollecting);
 
             collectorCount.text = "" + (100-isCollecting)+"%";
             if (isCollecting == 0)
