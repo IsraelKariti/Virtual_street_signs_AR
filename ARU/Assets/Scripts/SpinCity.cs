@@ -69,6 +69,9 @@ public class SpinCity : MonoBehaviour
     private double poiLon;
 
     private const double oneLatAngleInMeters = 111319.4444;
+
+    public static int isCollecting;
+    public Text collectorCount;
     private void Awake()
     {
         if (!Input.location.isEnabledByUser) //FIRST IM CHACKING FOR PERMISSION IF "true" IT MEANS USER GAVED PERMISSION FOR USING LOCATION INFORMATION
@@ -106,6 +109,7 @@ public class SpinCity : MonoBehaviour
         //instantiate the android plugin
         androidCompassProvider = new AndroidJavaObject("com.example.compasslib.CompassLib", unityActivity);
         androidCompassTime = 0;
+        isCollecting = 0;
     }
     // Update is called once per frame
     void Update()
@@ -240,18 +244,19 @@ public class SpinCity : MonoBehaviour
     private void AddAndroidGPSRead()
     {
         long time = gpsProvider.Get<long>("time");
+        float accuracy = gpsProvider.Get<float>("accuracy");
         //bool availability = gpsProvider.Get<bool>("availability");
 
-        if ( time > lastAndroidGPSTimeStamp)
+        if (accuracy<7 && time > lastAndroidGPSTimeStamp)
         {
-            Debug.Log("talikar time is bigger");
-
             androidCounter++;
             //AndroidGPSText.text = "counter: " + androidCounter;
             lastAndroidGPSTimeStamp = time;
             // calculate new lat-lon for the origin 
             double lat = gpsProvider.Get<double>("lat");
             double lon = gpsProvider.Get<double>("lon");
+
+            
 
             //Log the gps coordinates
             //File.AppendAllText(Application.persistentDataPath + "/Androidcamlat.txt", "lat: " + lat + "\n");
@@ -261,6 +266,8 @@ public class SpinCity : MonoBehaviour
             AndroidGPSText.text = "count: " + androidCounter;
             AndroidGPSText.text += "\nlat: " + lat;
             AndroidGPSText.text += "\nlon: " + lon;
+
+
 
             // camera gps (USE ONLY WHEN CAMERA IS STATIC)
             //qAndroidGPSCam.Enqueue(new Tuple<double, double>(lat, lon));
@@ -287,22 +294,52 @@ public class SpinCity : MonoBehaviour
             AndroidGPSText.text += "\navg orig lat: " + avgGPSOrigin.Item1;
             AndroidGPSText.text += "\navg orig lon: " + avgGPSOrigin.Item2;
             //father's square 31.261817, 34.794668
-            double latDiff = poiLat - avgGPSOrigin.Item1;
-            double lonDiff = poiLon - avgGPSOrigin.Item2;
+            double latDiff = poiLat-avgGPSOrigin.Item1;
+            double lonDiff = poiLon-avgGPSOrigin.Item2;
 
             double latDiffMeters = latDiff * oneLatAngleInMeters;
             double lonDiffMeters = lonDiff * Math.Cos(avgGPSOrigin.Item1.ToRadians())* oneLatAngleInMeters;
             AndroidGPSText.text += "\nlat diff meters: " + latDiffMeters;
             AndroidGPSText.text += "\nlon diff meters: " + lonDiffMeters;
-            kikar.transform.position = new Vector3((float)latDiffMeters, 0, (float)lonDiffMeters);
+            AndroidGPSText.text += "\naccuracy: " + accuracy;
+            kikar.transform.localPosition = new Vector3((float)lonDiffMeters, 0, (float)latDiffMeters);
             //"\ncounter: " + androidCounter;// +
             //"\norigin-lat: \n" + avgGPSOrigin.Item1 +
             //"\norigin-lon: \n" + avgGPSOrigin.Item2;
+            getPoi(lat, lon);
 
         }
     }
-    // get the latitude and longitude for the origin
-    Tuple<double, double> GetOriginLatLon(double phoneLat, double phoneLon)
+
+    void getPoi(double lat, double lon)
+    {
+        AndroidGPSText.text += "\nbtn: " + isCollecting;
+        Debug.Log("talikar iscoll 1 " + isCollecting);
+        // this is for the poi
+        if (isCollecting > 0)
+        {
+            Debug.Log("talikar iscoll 2 " + isCollecting);
+
+            CollectorHandler.qLat.Enqueue(lat);
+            CollectorHandler.qLon.Enqueue(lon);
+            Debug.Log("talikar iscoll 3 " + isCollecting);
+
+            isCollecting--;
+            Debug.Log("talikar iscoll 4 " + isCollecting);
+
+            collectorCount.text = "" + (100-isCollecting)+"%";
+            if (isCollecting == 0)
+            {
+                double avgLat = getQAvg(CollectorHandler.qLat);
+                double avgLon = getQAvg(CollectorHandler.qLon);
+                File.WriteAllText(Application.persistentDataPath + "/poiLat.txt", "" + avgLat);
+                File.WriteAllText(Application.persistentDataPath + "/poiLon.txt", "" + avgLon);
+
+            }
+        }
+    }
+// get the latitude and longitude for the origin
+Tuple<double, double> GetOriginLatLon(double phoneLat, double phoneLon)
     {
         //File.AppendAllText(Application.persistentDataPath + "/Androidcam_x.txt", "x: " + cam.transform.position.x + "\n");
         //File.AppendAllText(Application.persistentDataPath + "/Androidcam_z.txt", "z: " + cam.transform.position.z + "\n");
@@ -459,6 +496,16 @@ public class SpinCity : MonoBehaviour
         sumLat=sumLat/ qGPS.Count;
         sumLon=sumLon/ qGPS.Count;
         return new Tuple<double, double>(sumLat,sumLon);
+    }
+
+    double getQAvg(Queue<double> q)
+    {
+        double sum = 0;
+        foreach (double d in q)
+            sum += d;
+
+        sum /= q.Count;
+        return sum;
     }
     
 }
