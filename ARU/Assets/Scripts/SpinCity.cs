@@ -72,6 +72,10 @@ public class SpinCity : MonoBehaviour
 
     public static int isCollecting;
     public Text collectorCount;
+
+    public GameObject poiDialog;
+    public GameObject btnClose;
+    
     private void Awake()
     {
         if (!Input.location.isEnabledByUser) //FIRST IM CHACKING FOR PERMISSION IF "true" IT MEANS USER GAVED PERMISSION FOR USING LOCATION INFORMATION
@@ -247,7 +251,7 @@ public class SpinCity : MonoBehaviour
         float accuracy = gpsProvider.Get<float>("accuracy");
         //bool availability = gpsProvider.Get<bool>("availability");
 
-        if (accuracy<7 && time > lastAndroidGPSTimeStamp)
+        if (accuracy<10 && time > lastAndroidGPSTimeStamp)
         {
             androidCounter++;
             //AndroidGPSText.text = "counter: " + androidCounter;
@@ -324,10 +328,15 @@ public class SpinCity : MonoBehaviour
             isCollecting--;
 
             collectorCount.text = "" + (100-isCollecting)+"%";
+            // finish averaging the gps coordinates for the given location
             if (isCollecting == 0)
             {
                 double avgLat = getQAvg(CollectorHandler.qLat);
                 double avgLon = getQAvg(CollectorHandler.qLon);
+                poiDialog.SetActive(true);
+                CloseSave close_save = btnClose.GetComponent<CloseSave>();
+                close_save.lat = avgLat;
+                close_save.lon = avgLon;
                 File.WriteAllText(Application.persistentDataPath + "/poiLat.txt", "" + avgLat);
                 File.WriteAllText(Application.persistentDataPath + "/poiLon.txt", "" + avgLon);
 

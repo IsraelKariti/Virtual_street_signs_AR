@@ -16,6 +16,6 @@ public class CollectorHandler : MonoBehaviour
     public void startCollecting()
     {
         btn.text = "START";
-        SpinCity.isCollecting = 100;
+        SpinCity.isCollecting = 10;
     }
 }
