@@ -327,7 +327,8 @@ public class SpinCity : MonoBehaviour
 
             isCollecting--;
 
-            collectorCount.text = "" + (100-isCollecting)+"%";
+            int percentage_jumps = 100 / CollectorHandler.NUM_OF_GPS_READINGS;
+            collectorCount.text = "" + (CollectorHandler.NUM_OF_GPS_READINGS-isCollecting)*percentage_jumps+"%";
             // finish averaging the gps coordinates for the given location
             if (isCollecting == 0)
             {

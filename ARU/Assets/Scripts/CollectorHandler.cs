@@ -8,6 +8,7 @@ public class CollectorHandler : MonoBehaviour
     public static Queue<double> qLat;
     public static Queue<double> qLon;
     public Text btn;
+    public static int NUM_OF_GPS_READINGS = 10;
     public void Start()
     {
         qLat = new Queue<double>();
@@ -16,6 +17,6 @@ public class CollectorHandler : MonoBehaviour
     public void startCollecting()
     {
         btn.text = "START";
-        SpinCity.isCollecting = 10;
+        SpinCity.isCollecting = NUM_OF_GPS_READINGS;
     }
 }
