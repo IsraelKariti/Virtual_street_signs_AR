@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class CloseSave : MonoBehaviour
 {
     public GameObject dialogPopup;
+    public Text collectBtnTxt;
     public InputField heightInput;
     public InputField descInput;
     public double lat;
@@ -18,7 +19,12 @@ public class CloseSave : MonoBehaviour
         string height = heightInput.text;
         string desc = descInput.text;
 
-        File.WriteAllText(Application.persistentDataPath + "/allPoints.txt", "lat: " + lat+" lon: "+lon+" height: "+height+" desc: "+desc);
+        File.AppendAllText(Application.persistentDataPath + "/allPoints.txt", "lat: " + lat+" lon: "+lon+" height: "+height+" desc: "+desc+"\n");
         dialogPopup.SetActive(false);
+        CollectorHandler.qLat.Clear();
+        CollectorHandler.qLon.Clear();
+        heightInput.text = "";
+        descInput.text = "";
+        collectBtnTxt.text = "Mark";
     }
 }
