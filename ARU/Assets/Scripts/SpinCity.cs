@@ -75,7 +75,8 @@ public class SpinCity : MonoBehaviour
 
     public GameObject poiDialog;
     public GameObject btnClose;
-    
+
+    public static Tuple<double, double> avgGPSOrigin;
     private void Awake()
     {
         if (!Input.location.isEnabledByUser) //FIRST IM CHACKING FOR PERMISSION IF "true" IT MEANS USER GAVED PERMISSION FOR USING LOCATION INFORMATION
@@ -290,7 +291,7 @@ public class SpinCity : MonoBehaviour
             qAndroidGPSOrigin.Enqueue(tup);
 
             // get the average origin lat-lon in real world coordinates
-            Tuple<double, double> avgGPSOrigin = getGPSAvg(qAndroidGPSOrigin);
+            avgGPSOrigin = getGPSAvg(qAndroidGPSOrigin);
             //File.AppendAllText(Application.persistentDataPath + "/AndroidoriginlatAVG.txt", "lat: " + avgGPSOrigin.Item1 + "\n");
             //File.AppendAllText(Application.persistentDataPath + "/AndroidoriginlonAVG.txt", "lon: " + avgGPSOrigin.Item2 + "\n");
 
@@ -310,12 +311,12 @@ public class SpinCity : MonoBehaviour
             //"\ncounter: " + androidCounter;// +
             //"\norigin-lat: \n" + avgGPSOrigin.Item1 +
             //"\norigin-lon: \n" + avgGPSOrigin.Item2;
-            getPoi(lat, lon);
+            collectPoi(lat, lon);
 
         }
     }
 
-    void getPoi(double lat, double lon)
+    void collectPoi(double lat, double lon)
     {
         AndroidGPSText.text += "\nbtn: " + isCollecting;
         // this is for the poi

@@ -19,7 +19,7 @@ public class CloseSave : MonoBehaviour
         string height = heightInput.text;
         string desc = descInput.text;
 
-        File.AppendAllText(Application.persistentDataPath + "/allPoints.txt", "lat: " + lat+" lon: "+lon+" height: "+height+" desc: "+desc+"\n");
+        File.AppendAllText(Application.persistentDataPath + "/allPoints.txt", lat+" "+lon+" "+height+" "+desc+"\n");
         dialogPopup.SetActive(false);
         CollectorHandler.qLat.Clear();
         CollectorHandler.qLon.Clear();
