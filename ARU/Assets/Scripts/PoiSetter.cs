@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class PoiSetter : MonoBehaviour
 {
+    
     public GameObject myPrefab;
     public GameObject parent;
     private Queue<GameObject> cubeQueue;
@@ -48,6 +49,7 @@ public class PoiSetter : MonoBehaviour
             double lonDiffMeters = lonDiff * Math.Cos(SpinCity.avgGPSOrigin.Item1.ToRadians()) * oneLatAngleInMeters;
             Debug.Log("lat diff: " + latDiffMeters + " lon diff: " + lonDiffMeters);
             GameObject clone = Instantiate(myPrefab, new Vector3((float)lonDiffMeters, (float)partHeight, (float)latDiffMeters), Quaternion.identity, parent.transform);
+            clone.GetComponent<TextMesh>().text = parts[3];
             //GameObject clone = Instantiate(myPrefab, new Vector3((float)0, (float)partHeight, (float)0), Quaternion.identity, parent.transform);
             cubeQueue.Enqueue(clone);
         }
