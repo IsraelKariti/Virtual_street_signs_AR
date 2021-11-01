@@ -7,6 +7,7 @@ using UnityEngine;
 
 public class PoiSetter : MonoBehaviour
 {
+    public Camera cam;
     public GameObject city;
     public Text SetPoiLog;
     public GameObject myPrefab;
@@ -60,6 +61,7 @@ public class PoiSetter : MonoBehaviour
             SetPoiLog.text += " " + city.transform.rotation.eulerAngles.y;
 
             clone.transform.RotateAround(parent.transform.position, new Vector3(0, 1, 0), city.transform.rotation.eulerAngles.y);// this line is QUESTIONABLE
+            
             clone.GetComponent<TextMesh>().text = parts[3];
             //GameObject clone = Instantiate(myPrefab, new Vector3((float)0, (float)partHeight, (float)0), Quaternion.identity, parent.transform);
             cubeQueue.Enqueue(clone);
@@ -76,6 +78,9 @@ public class PoiSetter : MonoBehaviour
 
     private void Update()
     {
-        
+        foreach(GameObject go in cubeQueue)
+        {
+            go.transform.LookAt(2 * go.transform.position - cam.transform.position);//
+        }
     }
 }
