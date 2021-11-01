@@ -252,7 +252,7 @@ public class SpinCity : MonoBehaviour
         float accuracy = gpsProvider.Get<float>("accuracy");
         //bool availability = gpsProvider.Get<bool>("availability");
 
-        if (accuracy<10 && time > lastAndroidGPSTimeStamp)
+        if (accuracy<5 && time > lastAndroidGPSTimeStamp)
         {
             androidCounter++;
             //AndroidGPSText.text = "counter: " + androidCounter;
