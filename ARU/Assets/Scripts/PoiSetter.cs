@@ -56,14 +56,15 @@ public class PoiSetter : MonoBehaviour
             SetPoiLog.text += "\nlatMeters: " + latDiffMeters + "\nlonMeters: " + lonDiffMeters;
 
             Debug.Log("lat diff: " + latDiffMeters + " lon diff: " + lonDiffMeters);
-            GameObject clone = Instantiate(myPrefab, new Vector3((float)lonDiffMeters, (float)partHeight, (float)latDiffMeters), Quaternion.identity, parent.transform);
+            GameObject clone = Instantiate(myPrefab, new Vector3((float)lonDiffMeters, (float)partHeight, (float)latDiffMeters), Quaternion.identity, city.transform);
             SetPoiLog.text += "\nz rotate: ";// + city.transform.rotation.eulerAngles.z;
             SetPoiLog.text += " " + city.transform.rotation.eulerAngles.y;
 
-            clone.transform.RotateAround(parent.transform.position, new Vector3(0, 1, 0), city.transform.rotation.eulerAngles.y);// this line is QUESTIONABLE
+            clone.transform.RotateAround(city.transform.position, new Vector3(0, 1, 0), city.transform.rotation.eulerAngles.y);// this line is QUESTIONABLE
             
             clone.GetComponent<TextMesh>().text = parts[3];
-            //GameObject clone = Instantiate(myPrefab, new Vector3((float)0, (float)partHeight, (float)0), Quaternion.identity, parent.transform);
+            clone.GetComponent<TextMesh>().anchor = TextAnchor.MiddleCenter;
+            //GameObject clone = Instantiate(myPrefab, new ((float)0, (float)partHeight, (float)0), Quaternion.identity, parent.transform);
             cubeQueue.Enqueue(clone);
         }
         
