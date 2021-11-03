@@ -11,7 +11,7 @@ public class PoiSetter : MonoBehaviour
     public GameObject city;
     public Text SetPoiLog;
     public GameObject myPrefab;
-    public GameObject parent;
+
     private Queue<GameObject> cubeQueue;
     private const double oneLatAngleInMeters = 111319.4444;
     string[] poisLines;
