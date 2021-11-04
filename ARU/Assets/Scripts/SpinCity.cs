@@ -77,6 +77,17 @@ public class SpinCity : MonoBehaviour
     public GameObject btnClose;
 
     public static Tuple<double, double> avgGPSOrigin;
+
+    private int compassOffset;
+    public void increaseCompassOffset()
+    {
+        compassOffset++;
+    }
+    public void decreaseCompassOffset()
+    {
+        compassOffset--;
+    }
+
     private void Awake()
     {
         if (!Input.location.isEnabledByUser) //FIRST IM CHACKING FOR PERMISSION IF "true" IT MEANS USER GAVED PERMISSION FOR USING LOCATION INFORMATION
@@ -85,6 +96,7 @@ public class SpinCity : MonoBehaviour
         }
         poiLat = 31.261817;
         poiLon = 34.794668;
+        compassOffset = 0;
     }
 
     private void Start()
@@ -164,7 +176,7 @@ public class SpinCity : MonoBehaviour
             AddCompassRead();
             
             // rotate the virtual city to align with the readings
-            transform.eulerAngles = new Vector3(transform.eulerAngles.x, -avgCompass, transform.eulerAngles.z);
+            transform.eulerAngles = new Vector3(transform.eulerAngles.x, -avgCompass+compassOffset, transform.eulerAngles.z);
             //compassText.text = "" + (float)qCompass.Count / 10.0f + "%";
             
             //GPS
