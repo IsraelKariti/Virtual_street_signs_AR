@@ -8,7 +8,7 @@ public class Dialog : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-       dialogImage.SetActive(false);
+       //dialogImage.SetActive(false);
     }
 
     // Update is called once per frame

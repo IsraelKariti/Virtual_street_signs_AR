@@ -333,6 +333,7 @@ public class SpinCity : MonoBehaviour
             // finish averaging the gps coordinates for the given location
             if (isCollecting == 0)
             {
+                Debug.Log("finishingg");
                 double avgLat = getQAvg(CollectorHandler.qLat);
                 double avgLon = getQAvg(CollectorHandler.qLon);
                 poiDialog.SetActive(true);
