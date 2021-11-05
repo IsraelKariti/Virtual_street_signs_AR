@@ -1,14 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CreateGeoGrid : MonoBehaviour
 {
     public GameObject parent;
     public GameObject prefab;
+    public Text tracker;
+    private int val;
+
     // Start is called before the first frame update
     void Start()
     {
+        val = 0;
         // create 100X100 GEO GRID dynamically
         for (int z = -100; z <= 100; z += 2)
         {
@@ -21,9 +26,18 @@ public class CreateGeoGrid : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    public void dec()
     {
-        
+        transform.position = transform.position + new Vector3(0, 1, 0);
+        val--;
+        tracker.text = "" + val;
     }
+    public void inc()
+    {
+        transform.position = transform.position + new Vector3(0, -1, 0);
+        val++;
+        tracker.text = "" + val;
+
+    }
+
 }
