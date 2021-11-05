@@ -73,4 +73,11 @@ public class SetPoi : MonoBehaviour
             cubeQueue.Enqueue(clone);
         }
     }
+    private void Update()
+    {
+        foreach (GameObject go in cubeQueue)
+        {
+            go.transform.LookAt(2 * go.transform.position - cam.transform.position);//
+        }
+    }
 }
