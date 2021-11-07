@@ -15134,7 +15134,7 @@ MonoBehaviour:
   cam: {fileID: 22732920}
   city: {fileID: 1562069058}
   SetPoiLog: {fileID: 1971080908}
-  myPrefab: {fileID: 4096987100581144652, guid: 87a83588c3cb14745b90a1a8e98e466b,
+  myPrefab: {fileID: 3713462082584520994, guid: 323d06bc91ad7ca45926cee5fa144238,
     type: 3}
 --- !u!1 &1710119733
 GameObject:

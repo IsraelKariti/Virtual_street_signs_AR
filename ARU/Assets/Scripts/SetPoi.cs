@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.IO;
-
+using TMPro;
 public class SetPoi : MonoBehaviour
 {
     public GameObject dialog;
@@ -67,8 +67,8 @@ public class SetPoi : MonoBehaviour
 
             clone.transform.RotateAround(city.transform.position, new Vector3(0, 1, 0), city.transform.rotation.eulerAngles.y);// this line is QUESTIONABLE
 
-            clone.GetComponent<TextMesh>().text = parts[3];
-            clone.GetComponent<TextMesh>().anchor = TextAnchor.MiddleCenter;
+            clone.GetComponent<TextMeshPro>().text = parts[3];
+            //clone.GetComponent<TextMesh>().anchor = TextAnchor.MiddleCenter;
             //GameObject clone = Instantiate(myPrefab, new ((float)0, (float)partHeight, (float)0), Quaternion.identity, parent.transform);
             cubeQueue.Enqueue(clone);
         }
