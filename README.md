@@ -4,5 +4,5 @@ Given the low cost sensors that phone is using i had to come up with a way to im
 My algorithm collects magnometer and GPS sensor measurments, and utilizing the AR coordinate system, in order to convert those measurements into the real world respective values. 
 The advantage here is that no measurement is lost when the user is moving his phone in space, and the change in position or orientation doesn't cause measurements to be obsolete. The measurements are constantly converted between real world and AR world so that they all contribute to the most precise solution the phone is capable of.
 The (potentially) endless measurements used in the calculation, effectivly creates a seemless smooth optical illusion of a real objects placed in real world space.
-Here's a youtube video that demonstrates the app in action
+Here's a youtube video that demonstrates the app in action  
 https://youtu.be/9BA4Urlic0A
